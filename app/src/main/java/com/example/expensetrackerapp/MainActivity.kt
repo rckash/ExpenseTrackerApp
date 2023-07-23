@@ -2,12 +2,10 @@ package com.example.expensetrackerapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import com.example.expensetrackerapp.databinding.ActivityMainBinding
-import com.example.expensetrackerapp.databinding.FragmentGoalsBinding
-import com.example.expensetrackerapp.databinding.FragmentHomeBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationBarView
+import com.example.expensetrackerapp.fragments.GoalsFragment
+import com.example.expensetrackerapp.fragments.HomeFragment
+import com.example.expensetrackerapp.fragments.ReportFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
