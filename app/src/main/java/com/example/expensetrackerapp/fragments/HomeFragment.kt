@@ -35,17 +35,27 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpChart(pieChartEntry: ArrayList<PieEntry>) {
+        // pie chart data setup
         var pieDataSet: PieDataSet = PieDataSet(pieChartEntry, "My Pie Chart")
         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 100)
         pieDataSet.valueTextSize = 20f
-        pieDataSet.label.drop(5)
+        pieDataSet.setDrawValues(false)
 
+        // pie chart setup
         var pieData: PieData = PieData(pieDataSet)
         pieChart.data = pieData
+
+        // pie chart text settings setup
         pieChart.setEntryLabelTextSize(20f)
         pieChart.legend.isEnabled = false
         pieChart.description.isEnabled = false
         pieChart.setTouchEnabled(false)
+
+        // pie chart center hole settings setup
+        pieChart.center
+        pieChart.holeRadius = 60f
+        pieChart.setHoleColor(R.color.black)
+        pieChart.setTransparentCircleAlpha(0)
 
         pieChart.invalidate()
     }
