@@ -4,10 +4,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.databinding.ExpenseItemLayoutBinding
 import com.example.expensetrackerapp.roomdatabase.Expenses
 
-class ExpenseItemViewHolder (val binding: ExpenseItemLayoutBinding): RecyclerView.ViewHolder(binding.root) {
+class ExpenseItemViewHolder (val expenseBinding: ExpenseItemLayoutBinding): RecyclerView.ViewHolder(expenseBinding.root) {
 
     fun bind (expense: Expenses) {
-        binding.tvNameExpense.text = expense.name
-        binding.tvPriceExpense.text = expense.price.toString()
+        expenseBinding.tvNameExpense.text = expense.name
+        expenseBinding.tvPriceExpense.text = expense.price.toString()
     }
 }

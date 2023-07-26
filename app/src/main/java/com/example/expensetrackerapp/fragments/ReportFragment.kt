@@ -4,26 +4,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.databinding.FragmentReportBinding
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
+import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
-import com.example.expensetrackerapp.roomdatabase.ExpensesDatabase
+import com.example.expensetrackerapp.roomdatabase.AppDatabase
+import com.example.expensetrackerapp.roomdatabase.Income
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.EmptyMap.entries
 
 class ReportFragment : Fragment() {
     private lateinit var binding: FragmentReportBinding
-    private lateinit var appDB: ExpensesDatabase
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter = ExpenseAdapter
+
+    private lateinit var appDB: AppDatabase
+
+    private lateinit var expenseRecyclerView: RecyclerView
+    private lateinit var expenseAdapter: ExpenseAdapter
     private lateinit var expenseList: MutableList<Expenses>
+
+    private lateinit var incomeRecyclerView: RecyclerView
+    private lateinit var incomeAdapter: IncomeAdapter
+    private lateinit var incomeList: MutableList<Income>
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,56 +39,57 @@ class ReportFragment : Fragment() {
         binding = FragmentReportBinding.inflate(layoutInflater, container, false)
 
         // database instantiation
-        appDB = ExpensesDatabase.invoke(this)
+        appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
         // recyclerview setup
-        recyclerView = binding.rvExpensesReport
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        expenseRecyclerView = binding.rvExpensesReport
+        expenseRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+        incomeRecyclerView = binding.rvIncomeReport
+        incomeRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
-        expenseList = viewEntries()
+        expenseList = viewExpenses()
+        incomeList = viewIncome()
 
         // adapter setup
-        adapter = ExpenseAdapter(expenseList)
-        recyclerView.adapter = adapter
+        expenseAdapter = ExpenseAdapter(expenseList)
+        expenseRecyclerView.adapter = expenseAdapter
+        incomeAdapter = IncomeAdapter(incomeList)
+        incomeRecyclerView.adapter = incomeAdapter
+
 
         return binding.root
     }
 
-    private fun saveExpense(expenses: Expenses) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getExpenses().addExpense(expenses)
-        }
-        Toast.makeText(this, "Expense Saved", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun viewEntries(): MutableList<Expenses> {
+    private fun viewExpenses(): MutableList<Expenses> {
         lateinit var expenses: MutableList<Expenses>
         val newExpenses = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for (entry in appDB.getExpenses().getAllExpenses()) {
-                newExpenses.add(expenses)
+            for (expense in appDB.getExpenses().getAllExpenses()) {
+                newExpenses.add(expense)
             }
             withContext(Dispatchers.Main) {
-                adapter.expenses = newExpenses
-                adapter.notifyDataSetChanged()
+                expenseAdapter.expenses = newExpenses
+                expenseAdapter.notifyDataSetChanged()
             }
         }
         return newExpenses
     }
 
-    private fun updateEntry(expenses: Expenses) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getExpenses().updateExpense(entries)
-        }
-        Toast.makeText(this, "Entry Updated", Toast.LENGTH_SHORT).show()
-    }
+    private fun viewIncome(): MutableList<Income> {
+        lateinit var income: MutableList<Income>
+        val newIncome = mutableListOf<Income>()
 
-    private fun deleteEntry(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
-            appDB.getExpenses().deleteExpense(entries)
+            for (income in appDB.getIncome().getAllIncome()) {
+                newIncome.add(income)
+            }
+            withContext(Dispatchers.Main) {
+                incomeAdapter.income = newIncome
+                incomeAdapter.notifyDataSetChanged()
+            }
         }
-        Toast.makeText(this, "Entry Deleted", Toast.LENGTH_SHORT).show()
+        return newIncome
     }
 
 }
