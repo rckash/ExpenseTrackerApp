@@ -2,9 +2,11 @@ package com.example.expensetrackerapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Half.toFloat
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.app.AlertDialog
 import com.example.expensetrackerapp.databinding.ActivityMainBinding
+import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
 import com.example.expensetrackerapp.fragments.GoalsFragment
 import com.example.expensetrackerapp.fragments.HomeFragment
 import com.example.expensetrackerapp.fragments.ReportFragment
@@ -77,12 +79,48 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // save
-        val toSave = Expenses(0, "Medicine", 5000.35f)
-        val toSave2 = Expenses(0, "Food", 10250.99f)
-        saveExpense(toSave)
-        saveExpense(toSave2)
+        // FAB function
+        binding.floatingActionButton.setOnClickListener {
+            showAddDialog()
+        }
 
+        // save
+//        val toSave = Expenses(0, "Medicine", 5000.35f, "")
+//        val toSave2 = Expenses(0, "Food", 10250.99f, "")
+//        saveExpense(toSave)
+//        saveExpense(toSave2)
+
+    }
+
+    private fun showAddDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+        alertDialogBuilder.setTitle("Add")
+
+        val dialogLayout = layoutInflater.inflate(R.layout.dialog_add_entry_layout, null)
+        val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
+        alertDialogBuilder.setView(dialogLayout)
+
+        alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
+            // get data from edittexts
+            val name = dialogBinding.tfNameDialog.editText?.text.toString()
+            val price = dialogBinding.tfPriceDialog.editText?.text.toString().toFloat()
+
+            // add new item to database table
+            if (dialogBinding.rbExpense.isChecked) {
+                val newItem = Expenses(0, name, price, "")
+                saveExpense(newItem)
+            } else {
+                val newItem = Income(0, name, price, "")
+                saveIncome(newItem)
+            }
+            dialog.dismiss()
+        }
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
     private fun saveExpense(expenses: Expenses) {
@@ -130,7 +168,7 @@ class MainActivity : AppCompatActivity() {
             appDB.getIncome().addIncome(income)
             incomeAdapter.notifyDataSetChanged()
         }
-        Toast.makeText(applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
     }
 
     private fun viewIncome(): MutableList<Income> {
