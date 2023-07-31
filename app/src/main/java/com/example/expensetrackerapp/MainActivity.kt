@@ -22,9 +22,12 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
     private lateinit var appDB: AppDatabase
+
     private lateinit var expenseAdapter: ExpenseAdapter
     private lateinit var expenseList: MutableList<Expenses>
+
     private lateinit var incomeAdapter: IncomeAdapter
     private lateinit var incomeList: MutableList<Income>
 
@@ -50,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         // Default Fragment Setting
         supportFragmentManager.beginTransaction().apply {
+            binding.floatingActionButton.hide()
             replace(R.id.fragmentContainerView, HomeFragment)
             commit()
         }
@@ -59,18 +63,21 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.item_home -> {
                     supportFragmentManager.beginTransaction().apply {
+                        binding.floatingActionButton.hide()
                         replace(R.id.fragmentContainerView, HomeFragment)
                         commit()
                     }
                 }
                 R.id.item_report -> {
                     supportFragmentManager.beginTransaction().apply {
+                        binding.floatingActionButton.show()
                         replace(R.id.fragmentContainerView, ReportFragment)
                         commit()
                     }
                 }
                 R.id.item_goals -> {
                     supportFragmentManager.beginTransaction().apply {
+                        binding.floatingActionButton.show()
                         replace(R.id.fragmentContainerView, GoalsFragment)
                         commit()
                     }

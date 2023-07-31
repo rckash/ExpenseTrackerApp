@@ -1,41 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.HomeFragment">
 
-    <com.google.android.material.tabs.TabLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabMode="fixed"
-        style="@style/Base.Theme.ExpenseTrackerApp">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.tabs.TabItem
+        <TextView
+            android:id="@+id/tv_welcome_back_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Day"
-            />
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/dm_sans_medium"
+            android:text="Welcome back,"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.tabs.TabItem
+        <TextView
+            android:id="@+id/tv_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Week"
-            />
+            android:fontFamily="@font/dm_sans_medium"
+            android:text="User Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tv_welcome_back_label"
+            app:layout_constraintTop_toBottomOf="@+id/tv_welcome_back_label" />
 
-        <com.google.android.material.tabs.TabItem
+        <TextView
+            android:id="@+id/tv__your_expenses_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Month"
-            />
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/dm_sans_medium"
+            android:text="Your Expenses"
+            android:textSize="26sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_user_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_user_name" />
 
-    </com.google.android.material.tabs.TabLayout>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_pie_chart"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="30dp"
+            android:checkable="false"
+            android:clickable="false"
+            android:focusable="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv__your_expenses_label">
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pie_chart"
-        android:layout_width="300dp"
-        android:layout_height="400dp"
-        android:layout_gravity="center" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pie_chart"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center|start|center_horizontal|center_vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:foregroundGravity="center_vertical|center|center_horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tv_timespan"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_timespan" />
+
+                <TextView
+                    android:id="@+id/tv_expenses_label_cv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/dm_sans_medium"
+                    android:text="Expenses"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_timespan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/dm_sans_medium"
+                    android:text="1 Feb 2023 - 28 Feb 2023"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/tv_expenses_label_cv"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_expenses_label_cv" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_this_week"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/blue_1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="This Week"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="15dp"
+            app:layout_constraintStart_toStartOf="@+id/cv_pie_chart"
+            app:layout_constraintTop_toBottomOf="@+id/cv_pie_chart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_this_month"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue_1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="This Month"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_this_week"
+            app:layout_constraintEnd_toStartOf="@+id/btn_this_year"
+            app:layout_constraintStart_toEndOf="@+id/btn_this_week"
+            app:layout_constraintTop_toTopOf="@+id/btn_this_week" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_this_year"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue_1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="This Year"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_this_month"
+            app:layout_constraintEnd_toEndOf="@+id/cv_pie_chart"
+            app:layout_constraintTop_toTopOf="@+id/btn_this_month"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_income_vs_expenses"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:checkable="false"
+            android:clickable="false"
+            android:focusable="false"
+            app:layout_constraintEnd_toEndOf="@+id/btn_this_year"
+            app:layout_constraintStart_toStartOf="@+id/btn_this_week"
+            app:layout_constraintTop_toBottomOf="@+id/btn_this_month">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <TextView
+                    android:id="@+id/tv_income_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/dm_sans_medium"
+                    android:text="Income"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_expenses_label"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_expenses_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/dm_sans_medium"
+                    android:text="Expenses"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv_income_label"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_expenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/dm_sans_medium"
+                    android:text="+$9999"
+                    android:textColor="@color/blue_1"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/tv_income_label"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_income_label" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/dm_sans_medium"
+                    android:text="-$9999"
+                    android:textColor="@color/red_1"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_expenses_label"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_expenses_label" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    app:indicatorColor="@color/blue_1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/textView9"
+                    app:layout_constraintStart_toStartOf="@+id/tv_expenses"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_expenses"
+                    app:trackColor="@color/red_1"
+                    app:trackCornerRadius="10dp"
+                    app:trackThickness="15dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
