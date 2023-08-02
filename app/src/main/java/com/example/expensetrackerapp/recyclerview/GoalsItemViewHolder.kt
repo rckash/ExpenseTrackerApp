@@ -8,7 +8,7 @@ class GoalsItemViewHolder (val goalsBinding: GoalItemLayoutBinding): RecyclerVie
 
     fun bind (goals: Goals) {
         goalsBinding.tvNameGoal.text = goals.name
-        goalsBinding.tvAmountInvestedGoal.text = goals.amountInvested.toString()
         goalsBinding.tvPriceGoal.text = goals.price.toString()
+        goalsBinding.tvAmountInvestedGoal.text = goals.amountInvested.toString()
     }
 }

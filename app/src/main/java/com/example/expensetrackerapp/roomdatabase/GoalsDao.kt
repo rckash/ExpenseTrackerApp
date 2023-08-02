@@ -10,17 +10,17 @@ import androidx.room.Update
 interface GoalsDao {
     // Create
     @Insert
-    fun addExpense(goals: Goals)
+    fun addGoal(goals: Goals)
 
     // Read
     @Query("SELECT * FROM goals")
-    fun getAllExpenses(): List<Goals>
+    fun getAllGoals(): List<Goals>
 
     // Update
     @Update
-    fun updateExpense(goals: Goals)
+    fun updateGoal(goals: Goals)
 
     //Delete
     @Delete
-    fun deleteExpense(goals: Goals)
+    fun deleteGoal(goals: Goals)
 }

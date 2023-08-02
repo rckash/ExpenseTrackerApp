@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.databinding.GoalItemLayoutBinding
 import com.example.expensetrackerapp.roomdatabase.Goals
 
-class GoalAdapter (var goal: List<Goals>): RecyclerView.Adapter<GoalsItemViewHolder>() {
+class GoalAdapter (var goals: List<Goals>): RecyclerView.Adapter<GoalsItemViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalsItemViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = GoalItemLayoutBinding.inflate(inflater, parent, false)
@@ -14,10 +14,10 @@ class GoalAdapter (var goal: List<Goals>): RecyclerView.Adapter<GoalsItemViewHol
     }
 
     override fun getItemCount(): Int {
-        return goal.size
+        return goals.size
     }
 
     override fun onBindViewHolder(holder: GoalsItemViewHolder, position: Int) {
-        holder.bind(goal[position])
+        holder.bind(goals[position])
     }
 }

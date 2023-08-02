@@ -57,7 +57,7 @@ class ReportFragment : Fragment() {
 
         // recyclerview setup
         expenseRecyclerView = binding.rvExpensesReport
-        expenseRecyclerView.layoutManager = LinearLayoutManager (requireActivity().applicationContext)
+        expenseRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
         incomeRecyclerView = binding.rvIncomeReport
         incomeRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
@@ -106,6 +106,7 @@ class ReportFragment : Fragment() {
             } else {
                 val newItem = Income(0, name, price, "")
                 saveIncome(newItem)
+                viewIncome()
                 incomeList.add(newItem)
                 incomeRecyclerView.adapter?.notifyDataSetChanged()
             }
