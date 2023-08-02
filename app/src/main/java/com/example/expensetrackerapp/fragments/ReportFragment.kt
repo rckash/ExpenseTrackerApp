@@ -4,10 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expensetrackerapp.R
+import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
 import com.example.expensetrackerapp.databinding.FragmentReportBinding
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
 import com.example.expensetrackerapp.recyclerview.IncomeAdapter
@@ -25,12 +30,21 @@ class ReportFragment : Fragment() {
     private lateinit var appDB: AppDatabase
 
     private lateinit var expenseRecyclerView: RecyclerView
-    private lateinit var expenseAdapter: ExpenseAdapter
+    lateinit var expenseAdapter: ExpenseAdapter
     private lateinit var expenseList: MutableList<Expenses>
 
     private lateinit var incomeRecyclerView: RecyclerView
-    private lateinit var incomeAdapter: IncomeAdapter
+    lateinit var incomeAdapter: IncomeAdapter
     private lateinit var incomeList: MutableList<Income>
+
+
+    override fun onResume() {
+        super.onResume()
+        // dropdown menu setup
+        val viewOptions = resources.getStringArray(R.array.view_options)
+        val dropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, viewOptions)
+        binding.autoCompleteTextView.setAdapter(dropdownArrayAdapter)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,17 +61,62 @@ class ReportFragment : Fragment() {
         incomeRecyclerView = binding.rvIncomeReport
         incomeRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
+        // adapter setup
         expenseList = viewExpenses()
         incomeList = viewIncome()
 
-        // adapter setup
         expenseAdapter = ExpenseAdapter(expenseList)
         expenseRecyclerView.adapter = expenseAdapter
         incomeAdapter = IncomeAdapter(incomeList)
         incomeRecyclerView.adapter = incomeAdapter
 
 
+        binding.floatingActionButton.setOnClickListener {
+            showAddDialog()
+        }
+
+        binding.autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
+        }
+
+
         return binding.root
+    }
+
+    private fun showAddDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Add")
+
+        val dialogLayout = layoutInflater.inflate(R.layout.dialog_add_entry_layout, null)
+        val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
+        alertDialogBuilder.setView(dialogLayout)
+
+        alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
+            // get data from edittexts
+            val name = dialogBinding.tfNameDialog.editText?.text.toString()
+            val price = dialogBinding.tfPriceDialog.editText?.text.toString().toFloat()
+
+            // add new item to database table
+            if (dialogBinding.rbExpense.isChecked) {
+                val newItem = Expenses(0, name, price, "")
+                saveExpense(newItem)
+                viewExpenses()
+                expenseList.add(newItem)
+                expenseRecyclerView.adapter?.notifyDataSetChanged()
+            } else {
+                val newItem = Income(0, name, price, "")
+                saveIncome(newItem)
+                incomeList.add(newItem)
+                incomeRecyclerView.adapter?.notifyDataSetChanged()
+            }
+            dialog.dismiss()
+        }
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
     private fun viewExpenses(): MutableList<Expenses> {
@@ -91,5 +150,36 @@ class ReportFragment : Fragment() {
         }
         return newIncome
     }
+
+    private fun saveExpense(expenses: Expenses) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getExpenses().addExpense(expenses)
+        }
+        Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateEntry(expenses: Expenses) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getExpenses().updateExpense(expenses)
+            expenseAdapter.notifyDataSetChanged()
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun deleteEntry(expenses: Expenses) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getExpenses().deleteExpense(expenses)
+            expenseAdapter.notifyDataSetChanged()
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveIncome(income: Income) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getIncome().addIncome(income)
+        }
+        Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
+    }
+
 
 }
