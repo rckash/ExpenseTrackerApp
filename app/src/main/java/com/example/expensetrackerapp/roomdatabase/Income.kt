@@ -9,4 +9,4 @@ data class Income (
     var name: String,
     var price: Float,
     var category: String
-        )
+    )

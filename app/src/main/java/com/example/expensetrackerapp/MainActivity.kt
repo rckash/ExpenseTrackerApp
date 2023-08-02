@@ -13,9 +13,11 @@ import com.example.expensetrackerapp.fragments.GoalsFragment
 import com.example.expensetrackerapp.fragments.HomeFragment
 import com.example.expensetrackerapp.fragments.ReportFragment
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
+import com.example.expensetrackerapp.recyclerview.GoalAdapter
 import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
+import com.example.expensetrackerapp.roomdatabase.Goals
 import com.example.expensetrackerapp.roomdatabase.Income
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var incomeAdapter: IncomeAdapter
     private lateinit var incomeList: MutableList<Income>
+
+    private lateinit var goalAdapter: GoalAdapter
+    private lateinit var goalList: MutableList<Goals>
 
     lateinit var drawerToggle: ActionBarDrawerToggle
 

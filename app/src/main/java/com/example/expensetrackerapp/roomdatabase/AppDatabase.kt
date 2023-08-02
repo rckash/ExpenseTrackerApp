@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database (
-    entities = [Expenses::class, Income::class],
+    entities = [Expenses::class, Income::class, Goals::class],
     version = 1,
     exportSchema = false
 )
@@ -14,6 +14,7 @@ abstract class AppDatabase: RoomDatabase() {
 
     abstract fun getExpenses(): ExpensesDao
     abstract fun getIncome(): IncomeDao
+    abstract fun getGoals(): GoalsDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
