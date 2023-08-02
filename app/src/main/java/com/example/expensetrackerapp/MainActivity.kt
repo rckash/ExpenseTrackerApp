@@ -2,9 +2,11 @@ package com.example.expensetrackerapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Half.toFloat
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.drawerlayout.widget.DrawerLayout
 import com.example.expensetrackerapp.databinding.ActivityMainBinding
 import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
 import com.example.expensetrackerapp.fragments.GoalsFragment
@@ -15,6 +17,7 @@ import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Income
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var incomeAdapter: IncomeAdapter
     private lateinit var incomeList: MutableList<Income>
+
+    lateinit var drawerToggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,44 +63,57 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
 
-        // Fragments Navigation
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.item_home -> {
-                    supportFragmentManager.beginTransaction().apply {
-                        binding.floatingActionButton.hide()
-                        replace(R.id.fragmentContainerView, HomeFragment)
-                        commit()
-                    }
-                }
-                R.id.item_report -> {
-                    supportFragmentManager.beginTransaction().apply {
-                        binding.floatingActionButton.show()
-                        replace(R.id.fragmentContainerView, ReportFragment)
-                        commit()
-                    }
-                }
-                R.id.item_goals -> {
-                    supportFragmentManager.beginTransaction().apply {
-                        binding.floatingActionButton.show()
-                        replace(R.id.fragmentContainerView, GoalsFragment)
-                        commit()
-                    }
-                }
-            }
-            true
-        }
-
         // FAB function
         binding.floatingActionButton.setOnClickListener {
             showAddDialog()
         }
 
-        // save
-//        val toSave = Expenses(0, "Medicine", 5000.35f, "")
-//        val toSave2 = Expenses(0, "Food", 10250.99f, "")
-//        saveExpense(toSave)
-//        saveExpense(toSave2)
+        // nav drawer setup
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+
+        drawerToggle = ActionBarDrawerToggle( this, drawerLayout, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // fragments navigation
+        navView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+
+                    supportFragmentManager.beginTransaction().apply {
+                        binding.floatingActionButton.hide()
+                        replace(R.id.fragmentContainerView, HomeFragment)
+                        commit()
+                    }
+                    drawerLayout.close()
+
+                }
+                R.id.nav_report -> {
+
+                    supportFragmentManager.beginTransaction().apply {
+                        binding.floatingActionButton.show()
+                        replace(R.id.fragmentContainerView, ReportFragment)
+                        commit()
+                    }
+                    drawerLayout.close()
+
+                }
+                R.id.nav_goals -> {
+
+                    supportFragmentManager.beginTransaction().apply {
+                        binding.floatingActionButton.show()
+                        replace(R.id.fragmentContainerView, GoalsFragment)
+                        commit()
+                    }
+                    drawerLayout.close()
+
+                }
+            }
+            true
+        }
 
     }
 
@@ -192,6 +210,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return newIncome
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }
