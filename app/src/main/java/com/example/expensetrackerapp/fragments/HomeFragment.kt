@@ -78,8 +78,7 @@ class HomeFragment : Fragment() {
         plegend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
         plegend.xOffset = 0f
 
-        // pie chart center hole settings setup
-        pieChart.center
+        // pie chart center hole setup
         pieChart.holeRadius = 60f
         pieChart.setTransparentCircleAlpha(0)
 
