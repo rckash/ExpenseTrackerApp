@@ -58,17 +58,15 @@ class ReportFragment : Fragment() {
         // recyclerview setup
         expenseRecyclerView = binding.rvExpensesReport
         expenseRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-        incomeRecyclerView = binding.rvIncomeReport
-        incomeRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
         // adapter setup
         expenseList = viewExpenses()
         incomeList = viewIncome()
 
+        incomeAdapter = IncomeAdapter(incomeList)
+
         expenseAdapter = ExpenseAdapter(expenseList)
         expenseRecyclerView.adapter = expenseAdapter
-        incomeAdapter = IncomeAdapter(incomeList)
-        incomeRecyclerView.adapter = incomeAdapter
 
 
         binding.floatingActionButton.setOnClickListener {
@@ -76,6 +74,22 @@ class ReportFragment : Fragment() {
         }
 
         binding.autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            when (position) {
+                // expense item
+                0 -> {
+                    expenseRecyclerView = binding.rvExpensesReport
+                    expenseRecyclerView.adapter = expenseAdapter
+                }
+                // income item
+                1 -> {
+                    incomeRecyclerView = binding.rvExpensesReport
+                    incomeRecyclerView.adapter = incomeAdapter
+                }
+                // expense & income item
+                2 -> {
+
+                }
+            }
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
 
