@@ -28,33 +28,12 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-//    private lateinit var appDB: AppDatabase
-//
-//    private lateinit var expenseAdapter: ExpenseAdapter
-//    private lateinit var expenseList: MutableList<Expenses>
-//
-//    private lateinit var incomeAdapter: IncomeAdapter
-//    private lateinit var incomeList: MutableList<Income>
-//
-//    private lateinit var goalAdapter: GoalAdapter
-//    private lateinit var goalList: MutableList<Goals>
-
     lateinit var drawerToggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-//        // database instantiation
-//        appDB = AppDatabase.invoke(applicationContext)
-//
-//        expenseList = viewExpenses()
-//        incomeList = viewIncome()
-//
-//        // adapter setup
-//        expenseAdapter = ExpenseAdapter(expenseList)
-//        incomeAdapter = IncomeAdapter(incomeList)
 
         // Fragments Instantiation
         val HomeFragment = HomeFragment()
@@ -66,9 +45,6 @@ class MainActivity : AppCompatActivity() {
             replace(R.id.fragmentContainerView, HomeFragment)
             commit()
         }
-
-        // FAB function
-
 
         // nav drawer setup
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)

@@ -57,8 +57,6 @@ class HomeFragment : Fragment() {
         var pieData: PieData = PieData(pieDataSet)
         pieChart.data = pieData
 
-
-
         // pie chart text settings setup
         pieChart.setEntryLabelTextSize(0f)
         pieChart.description.isEnabled = false

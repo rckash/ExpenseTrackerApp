@@ -14,11 +14,12 @@
             android:id="@+id/rv_expenses_report"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/rv_income_report"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu">
+            app:layout_constraintTop_toBottomOf="@+id/btn_this_week">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -59,8 +60,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:hint="View"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,6 +75,56 @@
                 android:text="Expenses" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_this_week"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/blue_1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="This Week"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="15dp"
+            app:layout_constraintStart_toStartOf="@+id/dropdown_menu"
+            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_this_month"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue_1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="This Month"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_this_week"
+            app:layout_constraintEnd_toStartOf="@+id/btn_this_year"
+            app:layout_constraintStart_toEndOf="@+id/btn_this_week"
+            app:layout_constraintTop_toTopOf="@+id/btn_this_week" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_this_year"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue_1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="This Year"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_this_month"
+            app:layout_constraintEnd_toEndOf="@+id/dropdown_menu"
+            app:layout_constraintTop_toTopOf="@+id/btn_this_month"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
