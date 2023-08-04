@@ -15,9 +15,11 @@ import com.example.expensetrackerapp.R
 import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
 import com.example.expensetrackerapp.databinding.FragmentReportBinding
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
+import com.example.expensetrackerapp.recyclerview.ExpensesIncomeAdapter
 import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
+import com.example.expensetrackerapp.roomdatabase.ExpensesIncome
 import com.example.expensetrackerapp.roomdatabase.Income
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +46,10 @@ class ReportFragment : Fragment() {
     lateinit var incomeAdapter: IncomeAdapter
     private lateinit var incomeList: MutableList<Income>
 
+    private lateinit var expensesIncomeRecyclerView: RecyclerView
+    lateinit var expensesIncomeAdapter: ExpensesIncomeAdapter
+    private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
+
     override fun onResume() {
         super.onResume()
         // dropdown menu setup
@@ -67,12 +73,17 @@ class ReportFragment : Fragment() {
 
         // adapter setup
         expenseList = viewExpenses()
-        incomeList = viewIncome()
-
-        incomeAdapter = IncomeAdapter(incomeList)
-
         expenseAdapter = ExpenseAdapter(expenseList)
         expenseRecyclerView.adapter = expenseAdapter
+
+        incomeList = viewIncome()
+        incomeAdapter = IncomeAdapter(incomeList)
+        incomeRecyclerView.adapter = expenseAdapter
+
+        expensesIncomeList = viewExpensesIncome()
+        expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
+        expensesIncomeRecyclerView.adapter = expenseAdapter
+
 
 
         binding.floatingActionButton.setOnClickListener {
@@ -93,7 +104,8 @@ class ReportFragment : Fragment() {
                 }
                 // expense & income item
                 2 -> {
-
+                    expensesIncomeRecyclerView = binding.rvExpensesReport
+                    expensesIncomeRecyclerView.adapter = expensesIncomeAdapter
                 }
             }
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
@@ -151,12 +163,24 @@ class ReportFragment : Fragment() {
                 viewExpenses()
                 expenseList.add(newItem)
                 expenseRecyclerView.adapter?.notifyDataSetChanged()
+
+                val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = true)
+                saveExpensesIncome(newExInItem)
+                viewExpensesIncome()
+                expensesIncomeList.add(newExInItem)
+                expenseRecyclerView.adapter?.notifyDataSetChanged()
             } else {
                 val newItem = Income(0, name, price, "", dateInt, dateString)
                 saveIncome(newItem)
                 viewIncome()
                 incomeList.add(newItem)
                 incomeRecyclerView.adapter?.notifyDataSetChanged()
+
+                val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = false)
+                saveExpensesIncome(newExInItem)
+                viewExpensesIncome()
+                expensesIncomeList.add(newExInItem)
+                expenseRecyclerView.adapter?.notifyDataSetChanged()
             }
             dialog.dismiss()
         }
@@ -200,6 +224,21 @@ class ReportFragment : Fragment() {
         return newIncome
     }
 
+    private fun viewExpensesIncome(): MutableList<ExpensesIncome> {
+        val newExpensesIncome = mutableListOf<ExpensesIncome>()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expensesIncome in appDB.getExpensesIncome().getAllExpensesIncome()) {
+                newExpensesIncome.add(expensesIncome)
+            }
+            withContext(Dispatchers.Main) {
+                expensesIncomeAdapter.expensesIncome = newExpensesIncome
+                expensesIncomeAdapter.notifyDataSetChanged()
+            }
+        }
+        return newExpensesIncome
+    }
+
     private fun saveExpense(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().addExpense(expenses)
@@ -228,6 +267,13 @@ class ReportFragment : Fragment() {
             appDB.getIncome().addIncome(income)
         }
         Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveExpensesIncome(expensesIncome: ExpensesIncome) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getExpensesIncome().addExpensesIncome(expensesIncome)
+        }
+        Toast.makeText(requireActivity().applicationContext, "ExpensesIncome Saved", Toast.LENGTH_SHORT).show()
     }
 
     fun convertHeaderTextToString(headerText: String): Int {

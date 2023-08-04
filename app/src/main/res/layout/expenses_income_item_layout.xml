@@ -21,7 +21,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/tv_name_expenses"
+                android:id="@+id/tv_name_expenses_income"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -29,27 +29,27 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_price_expenses"
+                app:layout_constraintEnd_toStartOf="@+id/tv_price_expenses_income"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Name" />
 
             <TextView
-                android:id="@+id/tv_price_expenses"
+                android:id="@+id/tv_price_expenses_income"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_date_expenses"
+                app:layout_constraintEnd_toStartOf="@+id/tv_date_expenses_income"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv_name_expenses"
+                app:layout_constraintStart_toEndOf="@+id/tv_name_expenses_income"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Price" />
 
             <TextView
-                android:id="@+id/tv_date_expenses"
+                android:id="@+id/tv_date_expenses_income"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -57,7 +57,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv_price_expenses"
+                app:layout_constraintStart_toEndOf="@+id/tv_price_expenses_income"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Date" />
         </androidx.constraintlayout.widget.ConstraintLayout>

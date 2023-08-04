@@ -7,8 +7,8 @@ import com.example.expensetrackerapp.roomdatabase.Expenses
 class ExpenseItemViewHolder (val expenseBinding: ExpenseItemLayoutBinding): RecyclerView.ViewHolder(expenseBinding.root) {
 
     fun bind (expense: Expenses) {
-        expenseBinding.tvNameExpense.text = expense.name
-        expenseBinding.tvPriceExpense.text = expense.price.toString()
-        expenseBinding.tvDateExpense.text = expense.dateString
+        expenseBinding.tvNameExpenses.text = expense.name
+        expenseBinding.tvPriceExpenses.text = expense.price.toString()
+        expenseBinding.tvDateExpenses.text = expense.dateString
     }
 }
