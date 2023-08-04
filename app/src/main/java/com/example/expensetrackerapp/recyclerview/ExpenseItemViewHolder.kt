@@ -9,5 +9,6 @@ class ExpenseItemViewHolder (val expenseBinding: ExpenseItemLayoutBinding): Recy
     fun bind (expense: Expenses) {
         expenseBinding.tvNameExpense.text = expense.name
         expenseBinding.tvPriceExpense.text = expense.price.toString()
+        expenseBinding.tvDateExpense.text = expense.dateString
     }
 }

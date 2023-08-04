@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class Goals (
     @PrimaryKey (autoGenerate = true) var id: Int = 0,
     var name: String,
-    var price: Float,
-    var amountInvested: Float
+    var price: Int,
+    var amountInvested: Int
     )

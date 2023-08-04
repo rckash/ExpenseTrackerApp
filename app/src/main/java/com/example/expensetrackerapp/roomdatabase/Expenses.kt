@@ -7,6 +7,8 @@ import androidx.room.PrimaryKey
 data class Expenses (
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     var name: String,
-    var price: Float,
-    var category: String
+    var price: Int,
+    var category: String,
+    var dateInt: Int,
+    var dateString: String
     )

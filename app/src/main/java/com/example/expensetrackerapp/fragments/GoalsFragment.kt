@@ -70,8 +70,8 @@ class GoalsFragment : Fragment() {
         alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
             // get data from edittexts
             val name = dialogBinding.tfNameGoalDialog.editText?.text.toString()
-            val price = dialogBinding.tfPriceGoalDialog.editText?.text.toString().toFloat()
-            val amountInvested = dialogBinding.tfAmountInvestedGoalDialog.editText?.text.toString().toFloat()
+            val price = dialogBinding.tfPriceGoalDialog.editText?.text.toString().toInt()
+            val amountInvested = dialogBinding.tfAmountInvestedGoalDialog.editText?.text.toString().toInt()
 
             val newItem = Goals(0, name, price, amountInvested)
             saveGoal(newItem)

@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,10 +19,17 @@ import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Income
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.DateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Locale
+
 
 class ReportFragment : Fragment() {
     private lateinit var binding: FragmentReportBinding
@@ -36,7 +43,6 @@ class ReportFragment : Fragment() {
     private lateinit var incomeRecyclerView: RecyclerView
     lateinit var incomeAdapter: IncomeAdapter
     private lateinit var incomeList: MutableList<Income>
-
 
     override fun onResume() {
         super.onResume()
@@ -93,7 +99,6 @@ class ReportFragment : Fragment() {
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
 
-
         return binding.root
     }
 
@@ -105,20 +110,49 @@ class ReportFragment : Fragment() {
         val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
         alertDialogBuilder.setView(dialogLayout)
 
+        // get current date
+        val calendar = Calendar.getInstance().time
+        val calendarDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar)
+        // setting default date
+        dialogBinding.tvDate.setText(calendarDateFormat)
+        // selected date
+        var selectedDateInt = 20230803   //convertHeaderTextToString(calendarDateFormat)
+        var selectedDateString = calendarDateFormat
+
+        // for changing date
+        dialogBinding.btnSetDate.setOnClickListener {
+            val datePicker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+
+            datePicker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
+            datePicker.addOnPositiveButtonClickListener {
+                selectedDateString = datePicker.headerText
+                dialogBinding.tvDate.setText(selectedDateString)
+                var formattedDate = convertHeaderTextToString(selectedDateString)
+                selectedDateInt = formattedDate
+            }
+        }
+
         alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
             // get data from edittexts
             val name = dialogBinding.tfNameDialog.editText?.text.toString()
-            val price = dialogBinding.tfPriceDialog.editText?.text.toString().toFloat()
+            val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+            // get date and format
+            val dateInt = selectedDateInt
+            val dateString = selectedDateString
 
             // add new item to database table
             if (dialogBinding.rbExpense.isChecked) {
-                val newItem = Expenses(0, name, price, "")
+                val newItem = Expenses(0, name, price, "", dateInt, dateString)
                 saveExpense(newItem)
                 viewExpenses()
                 expenseList.add(newItem)
                 expenseRecyclerView.adapter?.notifyDataSetChanged()
             } else {
-                val newItem = Income(0, name, price, "")
+                val newItem = Income(0, name, price, "", dateInt, dateString)
                 saveIncome(newItem)
                 viewIncome()
                 incomeList.add(newItem)
@@ -196,5 +230,10 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
     }
 
+    fun convertHeaderTextToString(headerText: String): Int {
+        val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
+        val date = LocalDate.parse(headerText, formatter)
+        return date.format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
+    }
 
 }
