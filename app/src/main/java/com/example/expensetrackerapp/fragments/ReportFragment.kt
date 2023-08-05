@@ -67,27 +67,27 @@ class ReportFragment : Fragment() {
         // database instantiation
         appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
-        // recyclerview setup
+        // default recyclerview setup
         expenseRecyclerView = binding.rvExpensesReport
-        expenseRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-
-        // adapter setup
         expenseList = viewExpenses()
         expenseAdapter = ExpenseAdapter(expenseList)
         expenseRecyclerView.adapter = expenseAdapter
+        expenseRecyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
 
+        // adapter setup
         incomeList = viewIncome()
         incomeAdapter = IncomeAdapter(incomeList)
-        incomeRecyclerView.adapter = expenseAdapter
 
         expensesIncomeList = viewExpensesIncome()
         expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
-        expensesIncomeRecyclerView.adapter = expenseAdapter
-
 
 
         binding.floatingActionButton.setOnClickListener {
             showAddDialog()
+        }
+
+        binding.btnThisYear.setOnClickListener {
+
         }
 
         binding.autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
@@ -161,26 +161,18 @@ class ReportFragment : Fragment() {
                 val newItem = Expenses(0, name, price, "", dateInt, dateString)
                 saveExpense(newItem)
                 viewExpenses()
-                expenseList.add(newItem)
-                expenseRecyclerView.adapter?.notifyDataSetChanged()
 
                 val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = true)
                 saveExpensesIncome(newExInItem)
                 viewExpensesIncome()
-                expensesIncomeList.add(newExInItem)
-                expenseRecyclerView.adapter?.notifyDataSetChanged()
             } else {
                 val newItem = Income(0, name, price, "", dateInt, dateString)
                 saveIncome(newItem)
                 viewIncome()
-                incomeList.add(newItem)
-                incomeRecyclerView.adapter?.notifyDataSetChanged()
 
                 val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = false)
                 saveExpensesIncome(newExInItem)
                 viewExpensesIncome()
-                expensesIncomeList.add(newExInItem)
-                expenseRecyclerView.adapter?.notifyDataSetChanged()
             }
             dialog.dismiss()
         }
@@ -193,7 +185,21 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewExpenses(): MutableList<Expenses> {
-        lateinit var expenses: MutableList<Expenses>
+        val newExpenses = mutableListOf<Expenses>()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpenses()) {
+                newExpenses.add(expense)
+            }
+            withContext(Dispatchers.Main) {
+                expenseAdapter.expenses = newExpenses
+                expenseAdapter.notifyDataSetChanged()
+            }
+        }
+        return newExpenses
+    }
+
+    private fun viewYearExpenses(): MutableList<Expenses> {
         val newExpenses = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -209,7 +215,6 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewIncome(): MutableList<Income> {
-        lateinit var income: MutableList<Income>
         val newIncome = mutableListOf<Income>()
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -276,7 +281,7 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "ExpensesIncome Saved", Toast.LENGTH_SHORT).show()
     }
 
-    fun convertHeaderTextToString(headerText: String): Int {
+    private fun convertHeaderTextToString(headerText: String): Int {
         val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
         val date = LocalDate.parse(headerText, formatter)
         return date.format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()

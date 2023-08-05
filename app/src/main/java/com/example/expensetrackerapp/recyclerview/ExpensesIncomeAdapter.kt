@@ -22,8 +22,8 @@ class ExpensesIncomeAdapter (var expensesIncome: List<ExpensesIncome>): Recycler
         val currentItem = expensesIncome[position]
         holder.bind(currentItem)
 
-        if (currentItem.isExpense == true) {
-            holder.expensesIncomeBinding.cardView.setCardBackgroundColor(Color.rgb(159, 20, 32))
+        if (currentItem.isExpense == false) {
+            holder.expensesIncomeBinding.cardView.setCardBackgroundColor(Color.rgb(41, 159, 20))
         }
     }
 
