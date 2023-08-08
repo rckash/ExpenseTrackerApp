@@ -1,9 +1,10 @@
 package com.example.expensetrackerapp.recyclerview
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expensetrackerapp.R
 import com.example.expensetrackerapp.databinding.ExpensesIncomeItemLayoutBinding
 import com.example.expensetrackerapp.roomdatabase.ExpensesIncome
 
@@ -22,8 +23,9 @@ class ExpensesIncomeAdapter (var expensesIncome: List<ExpensesIncome>): Recycler
         val currentItem = expensesIncome[position]
         holder.bind(currentItem)
 
-        if (currentItem.isExpense == false) {
-            holder.expensesIncomeBinding.cardView.setCardBackgroundColor(Color.rgb(41, 159, 20))
+        if (!currentItem.isExpense) {
+            val incomeCardColor = ContextCompat.getColor(holder.itemView.context, R.color.blue_1)
+            holder.expensesIncomeBinding.cardView.setCardBackgroundColor(incomeCardColor)
         }
     }
 

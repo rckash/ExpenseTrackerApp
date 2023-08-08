@@ -11,5 +11,6 @@ class IncomeItemViewHolder (val incomeBinding: IncomeItemLayoutBinding): Recycle
     fun bind (income: Income) {
         incomeBinding.tvNameIncome.text = income.name
         incomeBinding.tvPriceIncome.text = income.price.toString()
+        incomeBinding.tvDateIncome.text = income.dateString
     }
 }

@@ -3,7 +3,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="open">open</string>
     <string name="close">Close</string>
-    
+
     <string-array name="view_options">
         <item>Expenses</item>
         <item>Income</item>

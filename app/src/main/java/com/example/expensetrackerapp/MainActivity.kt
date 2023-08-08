@@ -1,5 +1,6 @@
 package com.example.expensetrackerapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -21,6 +22,9 @@ import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Goals
 import com.example.expensetrackerapp.roomdatabase.Income
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,6 +32,7 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var auth: FirebaseAuth
 
     lateinit var drawerToggle: ActionBarDrawerToggle
 
@@ -36,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         getSupportActionBar()?.setDisplayShowTitleEnabled(false)
+
+        // Initialize Firebase Auth
+        auth = Firebase.auth
 
         // Fragments Instantiation
         val HomeFragment = HomeFragment()
@@ -88,10 +96,28 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.close()
 
                 }
+                R.id.sign_out -> {
+                    auth.signOut()
+
+                    val goToLoginActivityIntent = Intent(this@MainActivity, LoginActivity::class.java)
+                    startActivity(goToLoginActivityIntent)
+                    finish()
+                }
             }
             true
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            val goToMainActivityIntent = Intent(this@MainActivity, LoginActivity::class.java)
+            startActivity(goToMainActivityIntent)
+            finish()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
