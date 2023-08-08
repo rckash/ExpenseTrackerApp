@@ -3,6 +3,7 @@
     <style name="Base.Theme.ExpenseTrackerApp" parent="Theme.Material3.DayNight">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="fontFamily">@font/dm_sans_medium</item>
     </style>
 
     <style name="Theme.ExpenseTrackerApp" parent="Base.Theme.ExpenseTrackerApp" />

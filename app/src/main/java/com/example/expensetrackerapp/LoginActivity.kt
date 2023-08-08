@@ -19,12 +19,15 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Hide App Title in Action Bar
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false)
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
         binding.btnLogin.setOnClickListener {
-            var email = binding.tfEmailLogin.text.toString()
-            var password = binding.tfPasswordLogin.text.toString()
+            var email = binding.tfEmailLogin.editText?.text.toString()
+            var password = binding.tfPasswordLogin.editText?.text.toString()
 
             auth.signInWithEmailAndPassword(email, password)
 

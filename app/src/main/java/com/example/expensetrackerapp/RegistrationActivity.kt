@@ -19,18 +19,22 @@ class RegistrationActivity : AppCompatActivity() {
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Hide App Title in Action Bar
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false)
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
         binding.btnRegister.setOnClickListener {
-            var email = binding.tfEmailRegistration.text.toString()
-            var password = binding.tfPasswordRegistration.text.toString()
+            var email = binding.tfEmailRegistration.editText?.text.toString()
+            var password = binding.tfPasswordRegistration.editText?.text.toString()
 
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("RegistrationActivity", "createUserWithEmail:success")
+                        Toast.makeText(applicationContext, "Registered successfully.", Toast.LENGTH_SHORT,).show()
                         val user = auth.currentUser
 
                         val goToMainActivityIntent = Intent(this@RegistrationActivity, MainActivity::class.java)

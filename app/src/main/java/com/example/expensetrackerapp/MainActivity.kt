@@ -40,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Hide App Title in Action Bar
         getSupportActionBar()?.setDisplayShowTitleEnabled(false)
 
         // Initialize Firebase Auth
