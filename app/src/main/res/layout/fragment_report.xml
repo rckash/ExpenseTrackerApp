@@ -13,11 +13,13 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/dropdown_menu"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
             android:hint="View"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -32,56 +34,54 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_this_week"
-            style="@style/Widget.Material3.Button.ElevatedButton"
-            android:layout_width="105dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/blue_1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="This Week"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintStart_toStartOf="@+id/dropdown_menu"
-            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_this_month"
-            style="@style/Widget.Material3.Button.ElevatedButton"
-            android:layout_width="105dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/month_dropdown_menu"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/gray_1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="This Month"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_this_week"
-            app:layout_constraintEnd_toStartOf="@+id/btn_this_year"
-            app:layout_constraintStart_toEndOf="@+id/btn_this_week"
-            app:layout_constraintTop_toTopOf="@+id/btn_this_week" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_this_year"
-            style="@style/Widget.Material3.Button.ElevatedButton"
-            android:layout_width="105dp"
-            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/gray_1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="This Year"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_this_month"
+            android:hint="Month"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_this_month"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/year_dropdown_menu"
+            app:layout_constraintTop_toTopOf="@+id/year_dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/month_autoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dm_sans_medium"
+                android:inputType="none"
+                android:text="----"
+                android:textSize="24sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/year_dropdown_menu"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:hint="Year"
+            app:layout_constraintEnd_toStartOf="@+id/month_dropdown_menu"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/year_autoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dm_sans_medium"
+                android:inputType="none"
+                android:text="----"
+                android:textSize="24sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tv_free_budget_label"
@@ -92,9 +92,9 @@
             android:text="This week's free budget"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/btn_this_year"
-            app:layout_constraintStart_toStartOf="@+id/btn_this_week"
-            app:layout_constraintTop_toBottomOf="@+id/btn_this_week" />
+            app:layout_constraintEnd_toEndOf="@+id/month_dropdown_menu"
+            app:layout_constraintStart_toStartOf="@+id/year_dropdown_menu"
+            app:layout_constraintTop_toBottomOf="@+id/month_dropdown_menu" />
 
         <TextView
             android:id="@+id/tv_budget"
@@ -113,8 +113,8 @@
             android:layout_height="0dp"
             android:layout_marginTop="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btn_this_year"
-            app:layout_constraintStart_toStartOf="@+id/btn_this_week"
+            app:layout_constraintEnd_toEndOf="@+id/dropdown_menu"
+            app:layout_constraintStart_toStartOf="@+id/dropdown_menu"
             app:layout_constraintTop_toBottomOf="@+id/tv_budget">
 
             <androidx.constraintlayout.widget.ConstraintLayout

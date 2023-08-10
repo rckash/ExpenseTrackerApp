@@ -13,7 +13,7 @@ interface ExpensesIncomeDao {
     fun addExpensesIncome(expensesIncome: ExpensesIncome)
 
     // read
-    @Query ("SELECT * FROM expensesIncome")
+    @Query ("SELECT * FROM expensesIncome ORDER BY dateInt DESC")
     fun getAllExpensesIncome(): List<ExpensesIncome>
 
     // update
@@ -23,4 +23,7 @@ interface ExpensesIncomeDao {
     // delete
     @Delete
     fun deleteExpensesIncome(expensesIncome: ExpensesIncome)
+
+    @Query ("SELECT * FROM expensesIncome WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
+    fun getAllExpensesIncomeSortedByMonth(searchQuery: String): List<ExpensesIncome>
 }

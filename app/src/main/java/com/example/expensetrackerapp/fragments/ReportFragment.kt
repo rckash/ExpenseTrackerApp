@@ -50,12 +50,22 @@ class ReportFragment : Fragment() {
     lateinit var expensesIncomeAdapter: ExpensesIncomeAdapter
     private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
 
+    private lateinit var monthQuery: String
+
     override fun onResume() {
         super.onResume()
         // dropdown menu setup
         val viewOptions = resources.getStringArray(R.array.view_options)
         val dropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, viewOptions)
         binding.autoCompleteTextView.setAdapter(dropdownArrayAdapter)
+
+        val monthOptions = resources.getStringArray(R.array.month_options)
+        val monthDropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, monthOptions)
+        binding.monthAutoCompleteTextView.setAdapter(monthDropdownArrayAdapter)
+
+        val yearOptions = resources.getStringArray(R.array.year_options)
+        val yearDropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, yearOptions)
+        binding.yearAutoCompleteTextView.setAdapter(yearDropdownArrayAdapter)
     }
 
     override fun onCreateView(
@@ -86,9 +96,6 @@ class ReportFragment : Fragment() {
             showAddDialog()
         }
 
-        binding.btnThisYear.setOnClickListener {
-
-        }
 
         binding.autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
             when (position) {
@@ -111,6 +118,67 @@ class ReportFragment : Fragment() {
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
 
+        binding.monthAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            monthQuery = " "
+            when (position) {
+                // January
+                0 -> {
+                    monthQuery = "____%"
+                }
+                // February
+                1 -> {
+                    monthQuery = "____01%"
+                }
+                // March
+                2 -> {
+                    monthQuery = "____02%"
+                }
+                // April
+                3 -> {
+                    monthQuery = "____03%"
+                }
+                // May
+                4 -> {
+                    monthQuery = "____04%"
+                }
+                // June
+                5 -> {
+                    monthQuery = "____05%"
+                }
+                // July
+                6 -> {
+                    monthQuery = "____06%"
+                }
+                // August
+                7 -> {
+                    monthQuery = "____07%"
+                }
+                // September
+                8 -> {
+                    monthQuery = "____08%"
+                }
+                // October
+                9 -> {
+                    monthQuery = "____09%"
+                }
+                // November
+                10 -> {
+                    monthQuery = "____10%"
+                }
+                // December
+                11 -> {
+                    monthQuery = "____11%"
+                }
+                12 -> {
+                    monthQuery = "____12%"
+                }
+            }
+            viewExpensesSortedByMonth(monthQuery)
+            viewIncomeSortedByMonth(monthQuery)
+            viewExpensesIncomeSortedByMonth(monthQuery)
+            Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
+        }
+
         return binding.root
     }
 
@@ -128,7 +196,7 @@ class ReportFragment : Fragment() {
         // setting default date
         dialogBinding.tvDate.setText(calendarDateFormat)
         // selected date
-        var selectedDateInt = 20230803   //convertHeaderTextToString(calendarDateFormat)
+        var selectedDateInt = convertHeaderTextToString(calendarDateFormat)
         var selectedDateString = calendarDateFormat
 
         // for changing date
@@ -199,21 +267,6 @@ class ReportFragment : Fragment() {
         return newExpenses
     }
 
-    private fun viewYearExpenses(): MutableList<Expenses> {
-        val newExpenses = mutableListOf<Expenses>()
-
-        GlobalScope.launch(Dispatchers.IO) {
-            for (expense in appDB.getExpenses().getAllExpenses()) {
-                newExpenses.add(expense)
-            }
-            withContext(Dispatchers.Main) {
-                expenseAdapter.expenses = newExpenses
-                expenseAdapter.notifyDataSetChanged()
-            }
-        }
-        return newExpenses
-    }
-
     private fun viewIncome(): MutableList<Income> {
         val newIncome = mutableListOf<Income>()
 
@@ -251,6 +304,20 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
     }
 
+    private fun saveIncome(income: Income) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getIncome().addIncome(income)
+        }
+        Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveExpensesIncome(expensesIncome: ExpensesIncome) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getExpensesIncome().addExpensesIncome(expensesIncome)
+        }
+        Toast.makeText(requireActivity().applicationContext, "ExpensesIncome Saved", Toast.LENGTH_SHORT).show()
+    }
+
     private fun updateEntry(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().updateExpense(expenses)
@@ -267,24 +334,55 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
     }
 
-    private fun saveIncome(income: Income) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getIncome().addIncome(income)
-        }
-        Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun saveExpensesIncome(expensesIncome: ExpensesIncome) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getExpensesIncome().addExpensesIncome(expensesIncome)
-        }
-        Toast.makeText(requireActivity().applicationContext, "ExpensesIncome Saved", Toast.LENGTH_SHORT).show()
-    }
-
     private fun convertHeaderTextToString(headerText: String): Int {
         val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
         val date = LocalDate.parse(headerText, formatter)
         return date.format(DateTimeFormatter.ofPattern("yyyyMMdd")).toInt()
+    }
+
+    private fun viewExpensesSortedByMonth(searchQuery: String): MutableList<Expenses> {
+        val newExpenses = mutableListOf<Expenses>()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByMonth(searchQuery)) {
+                newExpenses.add(expense)
+            }
+            withContext(Dispatchers.Main) {
+                expenseAdapter.expenses = newExpenses
+                expenseAdapter.notifyDataSetChanged()
+            }
+        }
+        return newExpenses
+    }
+
+    private fun viewIncomeSortedByMonth(searchQuery: String): MutableList<Income> {
+        val newIncome = mutableListOf<Income>()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for (income in appDB.getIncome().getAllIncomeSortedByMonth(searchQuery)) {
+                newIncome.add(income)
+            }
+            withContext(Dispatchers.Main) {
+                incomeAdapter.income = newIncome
+                incomeAdapter.notifyDataSetChanged()
+            }
+        }
+        return newIncome
+    }
+
+    private fun viewExpensesIncomeSortedByMonth(searchQuery: String): MutableList<ExpensesIncome> {
+        val newExpensesIncome = mutableListOf<ExpensesIncome>()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expensesIncome in appDB.getExpensesIncome().getAllExpensesIncomeSortedByMonth(searchQuery)) {
+                newExpensesIncome.add(expensesIncome)
+            }
+            withContext(Dispatchers.Main) {
+                expensesIncomeAdapter.expensesIncome = newExpensesIncome
+                expensesIncomeAdapter.notifyDataSetChanged()
+            }
+        }
+        return newExpensesIncome
     }
 
 }

@@ -13,7 +13,7 @@ interface IncomeDao {
     fun addIncome(income: Income)
 
     // Read
-    @Query ("SELECT * FROM income")
+    @Query ("SELECT * FROM income ORDER BY dateInt DESC")
     fun getAllIncome(): List<Income>
 
     // Update
@@ -23,4 +23,7 @@ interface IncomeDao {
     //Delete
     @Delete
     fun deleteIncome(income: Income)
+
+    @Query ("SELECT * FROM income WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
+    fun getAllIncomeSortedByMonth(searchQuery: String): List<Income>
 }

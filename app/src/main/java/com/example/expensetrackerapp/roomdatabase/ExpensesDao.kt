@@ -13,14 +13,19 @@ interface ExpensesDao {
     fun addExpense(expenses: Expenses)
 
     // Read
-    @Query ("SELECT * FROM expenses")
+    @Query ("SELECT * FROM expenses ORDER BY dateInt DESC")
     fun getAllExpenses(): List<Expenses>
 
     // Update
     @Update
     fun updateExpense(expenses: Expenses)
 
-    //Delete
+    // Delete
     @Delete
     fun deleteExpense(expenses: Expenses)
+
+    // Sort by Month
+    @Query ("SELECT * FROM expenses WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
+    fun getAllExpensesSortedByMonth(searchQuery: String): List<Expenses>
+
 }
