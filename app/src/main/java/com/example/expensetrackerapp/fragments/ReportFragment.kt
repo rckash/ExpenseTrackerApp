@@ -1,6 +1,8 @@
 package com.example.expensetrackerapp.fragments
 
+import android.app.ProgressDialog.show
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,7 +52,7 @@ class ReportFragment : Fragment() {
     lateinit var expensesIncomeAdapter: ExpensesIncomeAdapter
     private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
 
-    private lateinit var monthQuery: String
+    private lateinit var searchQuery: String
 
     override fun onResume() {
         super.onResume()
@@ -91,6 +93,8 @@ class ReportFragment : Fragment() {
         expensesIncomeList = viewExpensesIncome()
         expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
 
+        var monthQuery: String = "__"
+        var yearQuery: String = "____"
 
         binding.floatingActionButton.setOnClickListener {
             showAddDialog()
@@ -119,63 +123,129 @@ class ReportFragment : Fragment() {
         }
 
         binding.monthAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            monthQuery = " "
             when (position) {
                 // January
                 0 -> {
-                    monthQuery = "____%"
+                    monthQuery = "__"
                 }
                 // February
                 1 -> {
-                    monthQuery = "____01%"
+                    monthQuery = "01"
                 }
                 // March
                 2 -> {
-                    monthQuery = "____02%"
+                    monthQuery = "02"
                 }
                 // April
                 3 -> {
-                    monthQuery = "____03%"
+                    monthQuery = "03"
                 }
                 // May
                 4 -> {
-                    monthQuery = "____04%"
+                    monthQuery = "04"
                 }
                 // June
                 5 -> {
-                    monthQuery = "____05%"
+                    monthQuery = "05"
                 }
                 // July
                 6 -> {
-                    monthQuery = "____06%"
+                    monthQuery = "06"
                 }
                 // August
                 7 -> {
-                    monthQuery = "____07%"
+                    monthQuery = "07"
                 }
                 // September
                 8 -> {
-                    monthQuery = "____08%"
+                    monthQuery = "08"
                 }
                 // October
                 9 -> {
-                    monthQuery = "____09%"
+                    monthQuery = "09"
                 }
                 // November
                 10 -> {
-                    monthQuery = "____10%"
+                    monthQuery = "10"
                 }
                 // December
                 11 -> {
-                    monthQuery = "____11%"
+                    monthQuery = "11"
                 }
                 12 -> {
-                    monthQuery = "____12%"
+                    monthQuery = "12"
                 }
             }
-            viewExpensesSortedByMonth(monthQuery)
-            viewIncomeSortedByMonth(monthQuery)
-            viewExpensesIncomeSortedByMonth(monthQuery)
+            searchQuery = "$yearQuery$monthQuery%"
+            Log.d("ReportFragment", monthQuery)
+            Log.d("ReportFragment", "searchQuery = $searchQuery")
+
+            viewExpensesSortedByMonth(searchQuery)
+            viewIncomeSortedByMonth(searchQuery)
+            viewExpensesIncomeSortedByMonth(searchQuery)
+
+            Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.yearAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            when (position) {
+                // 2023
+                0 -> {
+                    yearQuery = "____"
+                }
+                // 2023
+                1 -> {
+                    yearQuery = "2023"
+                }
+                // 2024
+                2 -> {
+                    yearQuery = "2024"
+                }
+                // 2025
+                3 -> {
+                    yearQuery = "2025"
+                }
+                // 2026
+                4 -> {
+                    yearQuery = "2026"
+                }
+                // 2027
+                5 -> {
+                    yearQuery = "2027"
+                }
+                // 2028
+                6 -> {
+                    yearQuery = "2028"
+                }
+                // 2029
+                7 -> {
+                    yearQuery = "2029"
+                }
+                // 2030
+                8 -> {
+                    yearQuery = "2030"
+                }
+                // 2031
+                9 -> {
+                    yearQuery = "2031"
+                }
+                // 2032
+                10 -> {
+                    yearQuery = "2032"
+                }
+                // 2033
+                11 -> {
+                    yearQuery = "2033"
+                }
+            }
+            searchQuery = "$yearQuery$monthQuery%"
+            Log.d("ReportFragment", monthQuery)
+            Log.d("ReportFragment", "searchQuery = $searchQuery")
+
+            viewExpensesSortedByMonth(searchQuery)
+            viewIncomeSortedByMonth(searchQuery)
+            viewExpensesIncomeSortedByMonth(searchQuery)
+
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
 
