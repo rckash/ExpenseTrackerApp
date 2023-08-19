@@ -24,6 +24,11 @@ import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.ExpensesIncome
 import com.example.expensetrackerapp.roomdatabase.Income
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -53,6 +58,8 @@ class ReportFragment : Fragment() {
     private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
 
     private lateinit var searchQuery: String
+
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onResume() {
         super.onResume()
@@ -93,13 +100,14 @@ class ReportFragment : Fragment() {
         expensesIncomeList = viewExpensesIncome()
         expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
 
-        var monthQuery: String = "__"
-        var yearQuery: String = "____"
+        var monthQuery: String = "----"
+        var yearQuery: String = "----"
+
+        firestore = FirebaseFirestore.getInstance()
 
         binding.floatingActionButton.setOnClickListener {
             showAddDialog()
         }
-
 
         binding.autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
             when (position) {
@@ -260,6 +268,8 @@ class ReportFragment : Fragment() {
         val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
         alertDialogBuilder.setView(dialogLayout)
 
+        dialogBinding.rbExpense.isChecked = true
+
         // get current date
         val calendar = Calendar.getInstance().time
         val calendarDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar)
@@ -303,6 +313,34 @@ class ReportFragment : Fragment() {
                 val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = true)
                 saveExpensesIncome(newExInItem)
                 viewExpensesIncome()
+
+                // start
+
+//                val user = FirebaseAuth.getInstance().currentUser
+//                val userUid = user?.uid.toString()
+//                val db = Firebase.firestore
+//
+//                val city = hashMapOf(
+//                    "name" to name,
+//                    "price" to price,
+//                    "category" to "",
+//                    "dateInt" to dateInt,
+//                    "dateString" to dateString,
+//                    "itemType" to "expense"
+//                )
+//
+//                // Add a new document with a generated ID
+//                db.collection("$userUid")
+//                    .add(city)
+//                    .addOnSuccessListener { documentReference ->
+//                        Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
+//                        Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
+//                    }
+//                    .addOnFailureListener { e ->
+//                        Toast.makeText(requireActivity().applicationContext, "Failed to upload to Firebase", Toast.LENGTH_SHORT).show()
+//                        Log.w("TAG", "Error adding document", e)
+//                    }
+
             } else {
                 val newItem = Income(0, name, price, "", dateInt, dateString)
                 saveIncome(newItem)
@@ -372,6 +410,7 @@ class ReportFragment : Fragment() {
             appDB.getExpenses().addExpense(expenses)
         }
         Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
     }
 
     private fun saveIncome(income: Income) {
@@ -385,7 +424,6 @@ class ReportFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpensesIncome().addExpensesIncome(expensesIncome)
         }
-        Toast.makeText(requireActivity().applicationContext, "ExpensesIncome Saved", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateEntry(expenses: Expenses) {

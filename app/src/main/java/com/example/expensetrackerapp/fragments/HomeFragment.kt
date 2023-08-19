@@ -10,8 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.R
 import com.example.expensetrackerapp.databinding.FragmentHomeBinding
+import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
+import com.example.expensetrackerapp.roomdatabase.AppDatabase
+import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.Legend.LegendOrientation
@@ -19,16 +24,29 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var pieChart: PieChart
+    private lateinit var appDB: AppDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+
+        // database instantiation
+        appDB = AppDatabase.invoke(requireActivity().applicationContext)
+
+        getTotalExpenses()
+
+        binding.tvUserName.text = FirebaseAuth.getInstance().currentUser?.email
 
         var pieChartEntry: ArrayList<PieEntry> = arrayListOf()
 
@@ -88,6 +106,19 @@ class HomeFragment : Fragment() {
         pieChartEntry.add(PieEntry(50F, "Medicine"))
         pieChartEntry.add(PieEntry(360F, "Food"))
         pieChartEntry.add(PieEntry(160F, "Misc"))
+    }
+
+    private fun getTotalExpenses() {
+        var newExpenses: Int = 0
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpenses()) {
+                newExpenses += expense.price
+            }
+            withContext(Dispatchers.Main) {
+                binding.tvBalance.text = newExpenses.toString()
+            }
+        }
     }
 
 }
