@@ -42,10 +42,10 @@
     </string-array>
 
     <string-array name="expenses_options">
-        <item>----</item>
+        <item>Food</item>
         <item>Rent</item>
         <item>Utility Bills</item>
-        <item>Work</item>
+        <item>School / Work</item>
         <item>Family</item>
         <item>Tax</item>
         <item>Entertainment</item>
@@ -55,7 +55,6 @@
     </string-array>
 
     <string-array name="income_options">
-        <item>----</item>
         <item>Salary</item>
         <item>Allowance</item>
         <item>Gift</item>

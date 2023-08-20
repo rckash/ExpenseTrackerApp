@@ -58,6 +58,7 @@ class ReportFragment : Fragment() {
     private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
 
     private lateinit var searchQuery: String
+    private lateinit var incomeType: String
 
     private lateinit var firestore: FirebaseFirestore
 
@@ -75,6 +76,7 @@ class ReportFragment : Fragment() {
         val yearOptions = resources.getStringArray(R.array.year_options)
         val yearDropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, yearOptions)
         binding.yearAutoCompleteTextView.setAdapter(yearDropdownArrayAdapter)
+
     }
 
     override fun onCreateView(
@@ -268,7 +270,27 @@ class ReportFragment : Fragment() {
         val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
         alertDialogBuilder.setView(dialogLayout)
 
+        // setting radio button default
         dialogBinding.rbExpense.isChecked = true
+
+        // setting dropdown menu for expense and income
+        val expenseCategoryOptions = resources.getStringArray(R.array.expenses_options)
+        val expenseDropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, expenseCategoryOptions)
+        dialogBinding.expenseAutoCompleteTextView.setAdapter(expenseDropdownArrayAdapter)
+
+        dialogBinding.rbExpense.setOnClickListener {
+            dialogBinding.expenseAutoCompleteTextView.setAdapter(expenseDropdownArrayAdapter)
+        }
+        dialogBinding.rbIncome.setOnClickListener {
+            val incomeCategoryOptions = resources.getStringArray(R.array.income_options)
+            val incomeDropdownArrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, incomeCategoryOptions)
+            dialogBinding.expenseAutoCompleteTextView.setAdapter(incomeDropdownArrayAdapter)
+        }
+
+        var expenseOrIncomeCategory = ""
+        dialogBinding.expenseAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            expenseOrIncomeCategory = parent.getItemAtPosition(position).toString()
+        }
 
         // get current date
         val calendar = Calendar.getInstance().time
@@ -306,7 +328,7 @@ class ReportFragment : Fragment() {
 
             // add new item to database table
             if (dialogBinding.rbExpense.isChecked) {
-                val newItem = Expenses(0, name, price, "", dateInt, dateString)
+                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
                 saveExpense(newItem)
                 viewExpenses()
 
@@ -342,7 +364,7 @@ class ReportFragment : Fragment() {
 //                    }
 
             } else {
-                val newItem = Income(0, name, price, "", dateInt, dateString)
+                val newItem = Income(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
                 saveIncome(newItem)
                 viewIncome()
 
