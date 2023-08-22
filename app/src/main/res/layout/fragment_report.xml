@@ -80,14 +80,14 @@
         <TextView
             android:id="@+id/tv_free_budget_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="27dp"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/dm_sans_medium"
             android:text="This week's free budget"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/month_dropdown_menu"
-            app:layout_constraintStart_toStartOf="@+id/year_dropdown_menu"
+            app:layout_constraintEnd_toEndOf="@+id/year_dropdown_menu"
+            app:layout_constraintStart_toStartOf="@+id/month_dropdown_menu"
             app:layout_constraintTop_toBottomOf="@+id/month_dropdown_menu" />
 
         <TextView

@@ -58,7 +58,6 @@ class ReportFragment : Fragment() {
     private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
 
     private lateinit var searchQuery: String
-    private lateinit var incomeType: String
 
     private lateinit var firestore: FirebaseFirestore
 
@@ -102,8 +101,8 @@ class ReportFragment : Fragment() {
         expensesIncomeList = viewExpensesIncome()
         expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
 
-        var monthQuery: String = "----"
-        var yearQuery: String = "----"
+        var monthQuery: String = "____"
+        var yearQuery: String = "____"
 
         firestore = FirebaseFirestore.getInstance()
 
@@ -133,59 +132,8 @@ class ReportFragment : Fragment() {
         }
 
         binding.monthAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            when (position) {
-                // January
-                0 -> {
-                    monthQuery = "__"
-                }
-                // February
-                1 -> {
-                    monthQuery = "01"
-                }
-                // March
-                2 -> {
-                    monthQuery = "02"
-                }
-                // April
-                3 -> {
-                    monthQuery = "03"
-                }
-                // May
-                4 -> {
-                    monthQuery = "04"
-                }
-                // June
-                5 -> {
-                    monthQuery = "05"
-                }
-                // July
-                6 -> {
-                    monthQuery = "06"
-                }
-                // August
-                7 -> {
-                    monthQuery = "07"
-                }
-                // September
-                8 -> {
-                    monthQuery = "08"
-                }
-                // October
-                9 -> {
-                    monthQuery = "09"
-                }
-                // November
-                10 -> {
-                    monthQuery = "10"
-                }
-                // December
-                11 -> {
-                    monthQuery = "11"
-                }
-                12 -> {
-                    monthQuery = "12"
-                }
-            }
+            monthQuery = parent.getItemAtPosition(position).toString()
+
             searchQuery = "$yearQuery$monthQuery%"
             Log.d("ReportFragment", monthQuery)
             Log.d("ReportFragment", "searchQuery = $searchQuery")
@@ -198,56 +146,8 @@ class ReportFragment : Fragment() {
         }
 
         binding.yearAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            when (position) {
-                // 2023
-                0 -> {
-                    yearQuery = "____"
-                }
-                // 2023
-                1 -> {
-                    yearQuery = "2023"
-                }
-                // 2024
-                2 -> {
-                    yearQuery = "2024"
-                }
-                // 2025
-                3 -> {
-                    yearQuery = "2025"
-                }
-                // 2026
-                4 -> {
-                    yearQuery = "2026"
-                }
-                // 2027
-                5 -> {
-                    yearQuery = "2027"
-                }
-                // 2028
-                6 -> {
-                    yearQuery = "2028"
-                }
-                // 2029
-                7 -> {
-                    yearQuery = "2029"
-                }
-                // 2030
-                8 -> {
-                    yearQuery = "2030"
-                }
-                // 2031
-                9 -> {
-                    yearQuery = "2031"
-                }
-                // 2032
-                10 -> {
-                    yearQuery = "2032"
-                }
-                // 2033
-                11 -> {
-                    yearQuery = "2033"
-                }
-            }
+            yearQuery = parent.getItemAtPosition(position).toString()
+
             searchQuery = "$yearQuery$monthQuery%"
             Log.d("ReportFragment", monthQuery)
             Log.d("ReportFragment", "searchQuery = $searchQuery")
