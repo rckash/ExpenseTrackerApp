@@ -101,7 +101,7 @@ class ReportFragment : Fragment() {
         expensesIncomeList = viewExpensesIncome()
         expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
 
-        var monthQuery: String = "____"
+        var monthQuery: String = "__"
         var yearQuery: String = "____"
 
         firestore = FirebaseFirestore.getInstance()
@@ -132,7 +132,49 @@ class ReportFragment : Fragment() {
         }
 
         binding.monthAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            monthQuery = parent.getItemAtPosition(position).toString()
+            val month = parent.getItemAtPosition(position).toString()
+            var monthQuery = "__"
+            when (month) {
+                "January" -> {
+                    monthQuery = "01"
+                }
+                "February" -> {
+                    monthQuery = "02"
+                }
+                "March" -> {
+                    monthQuery = "03"
+                }
+                "April" -> {
+                    monthQuery = "04"
+                }
+                "May" -> {
+                    monthQuery = "05"
+                }
+                "June" -> {
+                    monthQuery = "06"
+                }
+                "July" -> {
+                    monthQuery = "07"
+                }
+                "August" -> {
+                    monthQuery = "08"
+                }
+                "September" -> {
+                    monthQuery = "09"
+                }
+                "October" -> {
+                    monthQuery = "10"
+                }
+                "November" -> {
+                    monthQuery = "11"
+                }
+                "December" -> {
+                    monthQuery = "12"
+                }
+                else -> {
+                    monthQuery = "__"
+                }
+            }
 
             searchQuery = "$yearQuery$monthQuery%"
             Log.d("ReportFragment", monthQuery)

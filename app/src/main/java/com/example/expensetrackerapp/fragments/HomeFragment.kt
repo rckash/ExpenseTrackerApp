@@ -2,6 +2,7 @@ package com.example.expensetrackerapp.fragments
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,16 +93,68 @@ class HomeFragment : Fragment() {
     }
 
     private fun setPieChartValues(pieChartEntry: ArrayList<PieEntry>) {
-        pieChartEntry.add(PieEntry(250F, "Food"))
-        pieChartEntry.add(PieEntry(50F, "Rent"))
-        pieChartEntry.add(PieEntry(360F, "Utility"))
-        pieChartEntry.add(PieEntry(160F, "School/Work"))
-        pieChartEntry.add(PieEntry(160F, "Family"))
-        pieChartEntry.add(PieEntry(250F, "Tax"))
-        pieChartEntry.add(PieEntry(50F, "Entertainment"))
-        pieChartEntry.add(PieEntry(360F, "Travel"))
-        pieChartEntry.add(PieEntry(160F, "Gift"))
-        pieChartEntry.add(PieEntry(160F, "Misc"))
+
+        var foodTotalExpense = 0
+        var utilityTotalExpense = 0
+        var rentTotalExpense = 0
+        var schoolWorkTotalExpense = 0
+        var leisureTotalExpense = 0
+        var travelTotalExpense = 0
+        var giftTotalExpense = 0
+        var miscTotalExpense = 0
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Food")) {
+                foodTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Utility")) {
+                utilityTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Rent")) {
+                rentTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("School/Work")) {
+                schoolWorkTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Leisure")) {
+                leisureTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Travel")) {
+                travelTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Gift")) {
+                giftTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Misc")) {
+                miscTotalExpense += expense.price
+            }
+            withContext(Dispatchers.IO) {
+                if (foodTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(foodTotalExpense.toFloat(), "Food"))
+                }
+                if (utilityTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(utilityTotalExpense.toFloat(), "Utility"))
+                }
+                if (rentTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(rentTotalExpense.toFloat(), "Rent"))
+                }
+                if (schoolWorkTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(schoolWorkTotalExpense.toFloat(), "School/Work"))
+                }
+                if (leisureTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(leisureTotalExpense.toFloat(), "Leisure"))
+                }
+                if (travelTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(travelTotalExpense.toFloat(), "Travel"))
+                }
+                if (giftTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(giftTotalExpense.toFloat(), "Gift"))
+                }
+                if (miscTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(miscTotalExpense.toFloat(), "Misc"))
+                }
+            }
+        }
+
     }
 
     private fun getTotalExpenses() {

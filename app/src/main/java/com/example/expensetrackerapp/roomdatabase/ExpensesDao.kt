@@ -28,4 +28,8 @@ interface ExpensesDao {
     @Query ("SELECT * FROM expenses WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
     fun getAllExpensesSortedByMonth(searchQuery: String): List<Expenses>
 
+    // Get data by category
+    @Query ("SELECT * FROM expenses WHERE category LIKE :searchQuery ORDER BY dateInt DESC")
+    fun getAllExpensesSortedByCategory(searchQuery: String): List<Expenses>
+
 }

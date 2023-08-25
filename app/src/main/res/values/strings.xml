@@ -11,7 +11,7 @@
     </string-array>
 
     <string-array name="month_options">
-        <item>----</item>
+        <item>--  </item>
         <item>January</item>
         <item>February</item>
         <item>March</item>
@@ -27,7 +27,7 @@
     </string-array>
 
     <string-array name="year_options">
-        <item>----</item>
+        <item>--  </item>
         <item>2023</item>
         <item>2024</item>
         <item>2025</item>
@@ -44,11 +44,9 @@
     <string-array name="expenses_options">
         <item>Food</item>
         <item>Rent</item>
-        <item>Utility Bills</item>
+        <item>Utility</item>
         <item>School/Work</item>
-        <item>Family</item>
-        <item>Tax</item>
-        <item>Entertainment</item>
+        <item>Leisure</item>
         <item>Travel</item>
         <item>Gift</item>
         <item>Misc</item>
