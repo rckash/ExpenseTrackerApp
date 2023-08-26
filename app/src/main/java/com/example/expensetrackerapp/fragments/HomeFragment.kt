@@ -31,6 +31,7 @@ class HomeFragment : Fragment() {
     private lateinit var pieChart: PieChart
     private lateinit var appDB: AppDatabase
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,8 +44,8 @@ class HomeFragment : Fragment() {
         getTotalExpenses()
         getTotalIncome()
 
-        val monthAndYearPair = getMonthAndYear()
-        binding.tvTimespan.text = "${monthAndYearPair.first} ${monthAndYearPair.second}"
+        val dayMonthYearTriple = getDate()
+        binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
 
         binding.tvUserName.text = FirebaseAuth.getInstance().currentUser?.email
 
@@ -55,15 +56,28 @@ class HomeFragment : Fragment() {
         setPieChartValues(pieChartEntry)
         setUpPieChart(pieChartEntry)
 
+        binding.btnThisMonth.setOnClickListener {
+            binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
+        }
+
+        binding.btnThisYear.setOnClickListener {
+            binding.tvTimespan.text = dayMonthYearTriple.third
+        }
+
+        binding.btnThisWeek.setOnClickListener {
+            binding.tvTimespan.text = dayMonthYearTriple.first
+        }
+
         setUpProgressBar()
 
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun getMonthAndYear(): Pair<String, String> {
+    private fun getDate(): Triple<String, String, String> {
         // get current date
         val now = LocalDateTime.now()
+        val day = now.dayOfMonth.toString()
         val month = now.month.toString()
         val year = now.year.toString()
 
@@ -72,7 +86,7 @@ class HomeFragment : Fragment() {
 
         val formattedMonth = firstCharacter.uppercase() + restOfString.lowercase()
 
-        return formattedMonth to year
+        return Triple(day, formattedMonth, year)
     }
 
     private fun setUpPieChart(pieChartEntry: ArrayList<PieEntry>) {
@@ -177,10 +191,28 @@ class HomeFragment : Fragment() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getTotalExpenses() {
+        val currentDate = getDate()
+        var monthCode = "__"
+        when (currentDate.second) {
+            "January" -> { monthCode = "01" }
+            "February" -> { monthCode = "02" }
+            "March" -> { monthCode = "03" }
+            "April" -> { monthCode = "04" }
+            "May" -> { monthCode = "05" }
+            "June" -> { monthCode = "06" }
+            "July" -> { monthCode = "07" }
+            "August" -> { monthCode = "08" }
+            "September" -> { monthCode = "09" }
+            "October" -> { monthCode = "10" }
+            "November" -> { monthCode = "11" }
+            "December" -> { monthCode = "12" }
+        }
+
         var totalExpense: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
-            for (expense in appDB.getExpenses().getAllExpenses()) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}${monthCode}__")) {
                 totalExpense += expense.price
             }
             withContext(Dispatchers.IO) {
