@@ -1,11 +1,12 @@
 package com.example.expensetrackerapp.fragments
 
 import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.example.expensetrackerapp.R
@@ -23,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -41,6 +43,9 @@ class HomeFragment : Fragment() {
         getTotalExpenses()
         getTotalIncome()
 
+        val monthAndYearPair = getMonthAndYear()
+        binding.tvTimespan.text = "${monthAndYearPair.first} ${monthAndYearPair.second}"
+
         binding.tvUserName.text = FirebaseAuth.getInstance().currentUser?.email
 
         var pieChartEntry: ArrayList<PieEntry> = arrayListOf()
@@ -53,6 +58,21 @@ class HomeFragment : Fragment() {
         setUpProgressBar()
 
         return binding.root
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getMonthAndYear(): Pair<String, String> {
+        // get current date
+        val now = LocalDateTime.now()
+        val month = now.month.toString()
+        val year = now.year.toString()
+
+        val firstCharacter = month[0]
+        val restOfString = month.substring(1)
+
+        val formattedMonth = firstCharacter.uppercase() + restOfString.lowercase()
+
+        return formattedMonth to year
     }
 
     private fun setUpPieChart(pieChartEntry: ArrayList<PieEntry>) {

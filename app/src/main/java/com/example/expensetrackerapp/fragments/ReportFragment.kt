@@ -189,9 +189,12 @@ class ReportFragment : Fragment() {
 
         binding.yearAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
             yearQuery = parent.getItemAtPosition(position).toString()
+            if (yearQuery == "--") {
+                yearQuery = "____"
+            }
 
             searchQuery = "$yearQuery$monthQuery%"
-            Log.d("ReportFragment", monthQuery)
+            Log.d("YearQuery", "$yearQuery")
             Log.d("ReportFragment", "searchQuery = $searchQuery")
 
             viewExpensesSortedByMonth(searchQuery)
@@ -239,7 +242,7 @@ class ReportFragment : Fragment() {
         val calendarDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar)
         // setting default date
         dialogBinding.tvDate.setText(calendarDateFormat)
-        // selected date
+        // converting selected date format
         var selectedDateInt = convertHeaderTextToString(calendarDateFormat)
         var selectedDateString = calendarDateFormat
 
