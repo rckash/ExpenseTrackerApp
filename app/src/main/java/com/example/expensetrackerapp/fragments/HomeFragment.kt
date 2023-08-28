@@ -3,6 +3,7 @@ package com.example.expensetrackerapp.fragments
 import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,6 +59,7 @@ class HomeFragment : Fragment() {
 
         binding.btnThisMonth.setOnClickListener {
             binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
+            getTotalExpenses()
         }
 
         binding.btnThisYear.setOnClickListener {
@@ -65,7 +67,13 @@ class HomeFragment : Fragment() {
         }
 
         binding.btnThisWeek.setOnClickListener {
-            binding.tvTimespan.text = dayMonthYearTriple.first
+            val startOfWeek = getStartOfWeek().first
+            val endOfWeek = getEndOfWeek().first
+            binding.tvTimespan.text = "$startOfWeek - $endOfWeek"
+            val startOfWeekInt = getStartOfWeek().second.toInt()
+            val endOfWeekInt = getEndOfWeek().second.toInt()
+            Log.d("WeekDates", "$startOfWeekInt and $endOfWeekInt")
+            getWeekExpenses(startOfWeekInt, endOfWeekInt)
         }
 
         setUpProgressBar()
@@ -87,6 +95,121 @@ class HomeFragment : Fragment() {
         val formattedMonth = firstCharacter.uppercase() + restOfString.lowercase()
 
         return Triple(day, formattedMonth, year)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getStartOfWeek(): Pair<String, String> {
+        val today = LocalDateTime.now()
+        val dayOfWeekToday = today.dayOfWeek.toString()
+
+        // get start of week
+        var sundayBefore = today
+        when (dayOfWeekToday) {
+            "MONDAY" -> sundayBefore = today.minusDays(1)
+            "TUESDAY" -> sundayBefore = today.minusDays(2)
+            "WEDNESDAY" -> sundayBefore = today.minusDays(3)
+            "THURSDAY" -> sundayBefore = today.minusDays(4)
+            "FRIDAY" -> sundayBefore = today.minusDays(5)
+            "SATURDAY" -> sundayBefore = today.minusDays(6)
+            else -> sundayBefore = today
+        }
+        val startDay = sundayBefore.dayOfMonth.toString()
+        var formattedStartDay = "00"
+        when (startDay) {
+            "1" -> formattedStartDay = "01"
+            "2" -> formattedStartDay = "02"
+            "3" -> formattedStartDay = "03"
+            "4" -> formattedStartDay = "04"
+            "5" -> formattedStartDay = "05"
+            "6" -> formattedStartDay = "06"
+            "7" -> formattedStartDay = "07"
+            "8" -> formattedStartDay = "08"
+            "9" -> formattedStartDay = "09"
+            else -> formattedStartDay = startDay
+        }
+
+        val startMonth = sundayBefore.month.toString().substring(0,3)
+        var startMonthInt = "00"
+        when (startMonth) {
+            "JAN" -> startMonthInt = "01"
+            "FEB" -> startMonthInt = "02"
+            "MAR" -> startMonthInt = "03"
+            "APR" -> startMonthInt = "04"
+            "MAY" -> startMonthInt = "05"
+            "JUN" -> startMonthInt = "06"
+            "JUL" -> startMonthInt = "07"
+            "AUG" -> startMonthInt = "08"
+            "SEP" -> startMonthInt = "09"
+            "OCT" -> startMonthInt = "10"
+            "NOV" -> startMonthInt = "11"
+            "DEC" -> startMonthInt = "12"
+        }
+        val startYear = sundayBefore.year.toString()
+
+        // start of week date in String
+        val startOfWeek = "$startDay $startMonth $startYear"
+        // start of week date in Int
+        val startOfWeekInt = "$startYear$startMonthInt$formattedStartDay"
+
+        return startOfWeek to startOfWeekInt
+    }
+
+    private fun getEndOfWeek(): Pair<String, String> {
+        val today = LocalDateTime.now()
+        var dayOfWeekToday = today.dayOfWeek.toString()
+
+        // get end of week
+        var saturdayAfter = today
+        when (dayOfWeekToday) {
+            "SUNDAY" -> saturdayAfter = today.plusDays(6)
+            "MONDAY" -> saturdayAfter = today.plusDays(5)
+            "TUESDAY" -> saturdayAfter = today.plusDays(4)
+            "WEDNESDAY" -> saturdayAfter = today.plusDays(3)
+            "THURSDAY" -> saturdayAfter = today.plusDays(2)
+            "FRIDAY" -> saturdayAfter = today.plusDays(1)
+            else -> saturdayAfter = today
+        }
+
+        val endDay = saturdayAfter.dayOfMonth.toString()
+        var formattedEndDay = "00"
+        when (endDay) {
+            "1" -> formattedEndDay = "01"
+            "2" -> formattedEndDay = "02"
+            "3" -> formattedEndDay = "03"
+            "4" -> formattedEndDay = "04"
+            "5" -> formattedEndDay = "05"
+            "6" -> formattedEndDay = "06"
+            "7" -> formattedEndDay = "07"
+            "8" -> formattedEndDay = "08"
+            "9" -> formattedEndDay = "09"
+            else -> formattedEndDay = endDay
+        }
+
+        val endMonth = saturdayAfter.month.toString().substring(0,3)
+        var endMonthInt = "00"
+        when (endMonth) {
+            "JAN" -> endMonthInt = "01"
+            "FEB" -> endMonthInt = "02"
+            "MAR" -> endMonthInt = "03"
+            "APR" -> endMonthInt = "04"
+            "MAY" -> endMonthInt = "05"
+            "JUN" -> endMonthInt = "06"
+            "JUL" -> endMonthInt = "07"
+            "AUG" -> endMonthInt = "08"
+            "SEP" -> endMonthInt = "09"
+            "OCT" -> endMonthInt = "10"
+            "NOV" -> endMonthInt = "11"
+            "DEC" -> endMonthInt = "12"
+            else -> formattedEndDay
+        }
+        val endYear = saturdayAfter.year.toString()
+
+        // start of week date in String
+        val endOfWeek = "$endDay $endMonth $endYear"
+        // start of week date in Int
+        val endOfWeekInt = "$endYear$endMonthInt$formattedEndDay"
+
+        return endOfWeek to endOfWeekInt
     }
 
     private fun setUpPieChart(pieChartEntry: ArrayList<PieEntry>) {
@@ -222,6 +345,21 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getWeekExpenses(startOfWeek: Int, endOfWeek: Int) {
+
+        var weekExpense: Int = 0
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByWeek(startOfWeek, endOfWeek)) {
+                weekExpense += expense.price
+            }
+            withContext(Dispatchers.Main) {
+                binding.tvBalance.text = weekExpense.toString()
+                binding.tvExpensesMonth.text = weekExpense.toString()
+            }
+        }
+    }
+
     private fun getTotalIncome() {
         var totalIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
@@ -245,7 +383,7 @@ class HomeFragment : Fragment() {
                 totalIncome += income.price
             }
             withContext(Dispatchers.Main) {
-                binding.progressBar.max = totalExpense + totalIncome
+                binding.progressBar.max = totalExpense //+ totalIncome
                 val currentProgress = totalIncome
 
                 ObjectAnimator.ofInt(binding.progressBar, "progress", currentProgress)

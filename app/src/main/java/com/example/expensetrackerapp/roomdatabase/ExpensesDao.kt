@@ -24,6 +24,10 @@ interface ExpensesDao {
     @Delete
     fun deleteExpense(expenses: Expenses)
 
+    // Get data for this week
+    @Query ("SELECT * FROM expenses WHERE dateInt BETWEEN :searchQueryfirst AND :searchQuerySecond")
+    fun getAllExpensesSortedByWeek(searchQueryfirst: Int, searchQuerySecond: Int): List<Expenses>
+
     // Sort by Month
     @Query ("SELECT * FROM expenses WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
     fun getAllExpensesSortedByMonth(searchQuery: String): List<Expenses>
