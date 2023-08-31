@@ -56,6 +56,10 @@ class GoalsFragment : Fragment() {
             showAddDialog()
         }
 
+        binding.rvGoals.setOnClickListener {
+            Toast.makeText(requireActivity().applicationContext, "${ binding.rvGoals.id }", Toast.LENGTH_SHORT).show()
+        }
+
         return binding.root
     }
 
@@ -75,9 +79,8 @@ class GoalsFragment : Fragment() {
 
             val newItem = Goals(0, name, price, amountInvested)
             saveGoal(newItem)
-            viewGoals()
             goalsList.add(newItem)
-            goalsRecyclerView.adapter?.notifyDataSetChanged()
+            viewGoals()
 
             dialog.dismiss()
         }
@@ -109,6 +112,14 @@ class GoalsFragment : Fragment() {
             }
         }
         return newGoals
+    }
+
+    private fun deleteGoal(goals: Goals) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getGoals().deleteGoal(goals)
+            goalsAdapter.notifyDataSetChanged()
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
     }
 
 

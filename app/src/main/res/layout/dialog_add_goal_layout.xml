@@ -23,7 +23,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tf_amount_invested_goal_dialog"
+        android:id="@+id/tf_price_goal_dialog"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -39,14 +39,14 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tf_price_goal_dialog"
+        android:id="@+id/tf_amount_invested_goal_dialog"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
         android:hint="Amount Invested"
-        app:layout_constraintEnd_toEndOf="@+id/tf_amount_invested_goal_dialog"
-        app:layout_constraintStart_toStartOf="@+id/tf_amount_invested_goal_dialog"
-        app:layout_constraintTop_toBottomOf="@+id/tf_amount_invested_goal_dialog">
+        app:layout_constraintEnd_toEndOf="@+id/tf_price_goal_dialog"
+        app:layout_constraintStart_toStartOf="@+id/tf_price_goal_dialog"
+        app:layout_constraintTop_toBottomOf="@+id/tf_price_goal_dialog">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"

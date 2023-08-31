@@ -366,7 +366,7 @@ class HomeFragment : Fragment() {
             for (income in appDB.getIncome().getAllIncome()) {
                 totalIncome += income.price
             }
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
                 binding.tvIncomeMonth.text = totalIncome.toString()
             }
         }
