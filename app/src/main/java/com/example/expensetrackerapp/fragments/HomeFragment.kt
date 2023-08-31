@@ -57,16 +57,30 @@ class HomeFragment : Fragment() {
         setPieChartValues(pieChartEntry)
         setUpPieChart(pieChartEntry)
 
+        binding.btnThisMonth.isEnabled = false
+
         binding.btnThisMonth.setOnClickListener {
+            binding.btnThisMonth.isEnabled = false
+            binding.btnThisWeek.isEnabled = true
+            binding.btnThisYear.isEnabled = true
+
             binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
             getTotalExpenses()
         }
 
         binding.btnThisYear.setOnClickListener {
+            binding.btnThisMonth.isEnabled = true
+            binding.btnThisWeek.isEnabled = true
+            binding.btnThisYear.isEnabled = false
+
             binding.tvTimespan.text = dayMonthYearTriple.third
         }
 
         binding.btnThisWeek.setOnClickListener {
+            binding.btnThisMonth.isEnabled = true
+            binding.btnThisWeek.isEnabled = false
+            binding.btnThisYear.isEnabled = true
+
             val startOfWeek = getStartOfWeek().first
             val endOfWeek = getEndOfWeek().first
             binding.tvTimespan.text = "$startOfWeek - $endOfWeek"
