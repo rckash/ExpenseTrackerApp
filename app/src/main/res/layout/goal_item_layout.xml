@@ -9,8 +9,9 @@
         android:id="@+id/cardView2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,14 +39,13 @@
                 android:id="@+id/tv_price_goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/dm_sans_medium"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/tv_amount_invested_goal"
-                app:layout_constraintTop_toBottomOf="@+id/tv_name_goal"
+                app:layout_constraintTop_toTopOf="@+id/tv_amount_invested_goal"
                 tools:text="price" />
 
             <TextView
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="15dp"
                 android:fontFamily="@font/dm_sans_medium"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toStartOf="@+id/tv_price_goal"
@@ -80,6 +80,20 @@
                 app:trackColor="@color/red_1"
                 app:trackCornerRadius="10dp"
                 app:trackThickness="15dp" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </com.google.android.material.card.MaterialCardView>
+
+    <Button
+        android:id="@+id/btn_delete_goal"
+        style="@style/Widget.Material3.Button.IconButton.Filled"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-15dp"
+        android:backgroundTint="@color/red_1"
+        app:icon="@drawable/baseline_delete_outline_24"
+        app:layout_constraintEnd_toEndOf="@+id/cardView2"
+        app:layout_constraintStart_toEndOf="@+id/cardView2"
+        app:layout_constraintTop_toTopOf="@+id/cardView2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

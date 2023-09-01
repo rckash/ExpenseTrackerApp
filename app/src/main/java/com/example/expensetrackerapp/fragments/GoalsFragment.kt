@@ -1,5 +1,6 @@
 package com.example.expensetrackerapp.fragments
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.R
 import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
 import com.example.expensetrackerapp.databinding.DialogAddGoalLayoutBinding
+import com.example.expensetrackerapp.databinding.DialogUpdateGoalLayoutBinding
 import com.example.expensetrackerapp.databinding.FragmentGoalsBinding
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
 import com.example.expensetrackerapp.recyclerview.GoalAdapter
@@ -58,6 +60,41 @@ class GoalsFragment : Fragment() {
 
         binding.rvGoals.setOnClickListener {
             Toast.makeText(requireActivity().applicationContext, "${ binding.rvGoals.id }", Toast.LENGTH_SHORT).show()
+        }
+
+        goalsAdapter.onGoalClick = { goals ->
+            val alertDialogBuilder = AlertDialog.Builder(requireContext())
+            alertDialogBuilder.setTitle("Goal Edit")
+
+            val dialogLayout = layoutInflater.inflate(R.layout.dialog_update_goal_layout, null)
+            val dialogBinding = DialogUpdateGoalLayoutBinding.bind(dialogLayout)
+            alertDialogBuilder.setView(dialogLayout)
+
+            dialogBinding.tfNameGoalUpdateDialog.editText?.setText(goals.name)
+            dialogBinding.tfPriceGoalUpdateDialog.editText?.setText(goals.price.toString())
+            dialogBinding.tfAmountInvestedGoalUpdateDialog.editText?.setText(goals.amountInvested.toString())
+
+            alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
+                val name = dialogBinding.tfNameGoalUpdateDialog.editText?.text.toString()
+                val price = dialogBinding.tfPriceGoalUpdateDialog.editText?.text.toString().toInt()
+                val amountInvested = dialogBinding.tfAmountInvestedGoalUpdateDialog.editText?.text.toString().toInt()
+
+                val goalItem = Goals(goals.id, name, price, amountInvested)
+                updateGoal(goalItem)
+                viewGoals()
+            }
+            alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+            val alertDialog: AlertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
+        goalsAdapter.onDeleteClick = { goals ->
+            val goalItem = Goals(goals.id, "", 0, 0)
+            deleteGoal(goalItem)
+            viewGoals()
         }
 
         return binding.root
@@ -114,10 +151,16 @@ class GoalsFragment : Fragment() {
         return newGoals
     }
 
+    private fun updateGoal(goals: Goals) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getGoals().updateGoal(goals)
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
+    }
+
     private fun deleteGoal(goals: Goals) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getGoals().deleteGoal(goals)
-            goalsAdapter.notifyDataSetChanged()
         }
         Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
     }

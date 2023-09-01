@@ -13,8 +13,6 @@ import org.checkerframework.checker.units.qual.g
 
 class GoalsItemViewHolder (val goalsBinding: GoalItemLayoutBinding): RecyclerView.ViewHolder(goalsBinding.root) {
 
-    private lateinit var appDB: AppDatabase
-
     fun bind (goals: Goals) {
         goalsBinding.tvNameGoal.text = goals.name
         goalsBinding.tvPriceGoal.text = goals.price.toString()
