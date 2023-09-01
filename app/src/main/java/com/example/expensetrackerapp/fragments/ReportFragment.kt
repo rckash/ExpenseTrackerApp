@@ -10,11 +10,13 @@ import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.R
 import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
+import com.example.expensetrackerapp.databinding.DialogUpdateGoalLayoutBinding
 import com.example.expensetrackerapp.databinding.FragmentReportBinding
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
 import com.example.expensetrackerapp.recyclerview.ExpensesIncomeAdapter
@@ -22,6 +24,7 @@ import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.ExpensesIncome
+import com.example.expensetrackerapp.roomdatabase.Goals
 import com.example.expensetrackerapp.roomdatabase.Income
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
@@ -202,6 +205,216 @@ class ReportFragment : Fragment() {
             viewExpensesIncomeSortedByMonth(searchQuery)
 
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
+        }
+        
+        expenseAdapter.onExpenseClick = { expenses ->
+            val alertDialogBuilder = AlertDialog.Builder(requireContext())
+            alertDialogBuilder.setTitle("Expense Item Edit")
+
+            val dialogLayout = layoutInflater.inflate(R.layout.dialog_add_entry_layout, null)
+            val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
+            alertDialogBuilder.setView(dialogLayout)
+
+            dialogBinding.tfNameDialog.editText?.setText(expenses.name)
+            dialogBinding.tfPriceDialog.editText?.setText(expenses.price.toString())
+            dialogBinding.tvDate.setText(expenses.dateInt.toString())
+
+            // setting radio button default
+            dialogBinding.rbExpense.isVisible = false
+            dialogBinding.rbIncome.isVisible = false
+
+            // setting dropdown menu for expense and income
+            dialogBinding.expenseAutoCompleteTextView.setText(expenses.category)
+
+            val expenseCategoryOptions = resources.getStringArray(R.array.expenses_options)
+            val expenseDropdownArrayAdapter =
+                ArrayAdapter(requireContext(), R.layout.dropdown_item, expenseCategoryOptions)
+            dialogBinding.expenseAutoCompleteTextView.setAdapter(expenseDropdownArrayAdapter)
+
+            var expenseOrIncomeCategory = ""
+            dialogBinding.expenseAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+                expenseOrIncomeCategory = parent.getItemAtPosition(position).toString()
+            }
+
+            // get current date
+            val calendar = Calendar.getInstance().time
+            val calendarDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar)
+            // setting default date
+            val defaultDate = expenses.dateInt.toString()
+            val defaultDay = defaultDate.substring(6, 8)
+            val defaultMonthCode = defaultDate.substring(4, 6)
+            var defaultMonth = "Jan"
+            when (defaultMonthCode) {
+                "01" -> defaultMonth = "Jan"
+                "02" -> defaultMonth = "Feb"
+                "03" -> defaultMonth = "Mar"
+                "04" -> defaultMonth = "Apr"
+                "05" -> defaultMonth = "May"
+                "06" -> defaultMonth = "Jun"
+                "07" -> defaultMonth = "Jul"
+                "08" -> defaultMonth = "Aug"
+                "09" -> defaultMonth = "Sep"
+                "10" -> defaultMonth = "Oct"
+                "11" -> defaultMonth = "Nov"
+                "12" -> defaultMonth = "Dec"
+            }
+            val defaultYear = defaultDate.substring(0, 4)
+            dialogBinding.tvDate.setText("$defaultMonth $defaultDay, $defaultYear")
+            // converting selected date format
+            var selectedDateInt = convertHeaderTextToString(calendarDateFormat)
+            var selectedDateString = calendarDateFormat
+
+            // for changing date
+            dialogBinding.btnSetDate.setOnClickListener {
+                val datePicker =
+                    MaterialDatePicker.Builder.datePicker()
+                        .setTitleText("Select date")
+                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build()
+
+                datePicker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
+                datePicker.addOnPositiveButtonClickListener {
+                    selectedDateString = datePicker.headerText
+                    dialogBinding.tvDate.setText(selectedDateString)
+                    var formattedDate = convertHeaderTextToString(selectedDateString)
+                    selectedDateInt = formattedDate
+                }
+            }
+
+            alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
+                // get data from edittexts
+                val name = dialogBinding.tfNameDialog.editText?.text.toString()
+                val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+                // get date and format
+                val dateInt = selectedDateInt
+                val dateString = selectedDateString
+                // default category
+                if (expenseOrIncomeCategory == "") {
+                    expenseOrIncomeCategory = expenses.category
+                }
+
+                // add new item to database table
+                val expenseItem = Expenses(expenses.id, name, price, expenseOrIncomeCategory, dateInt, dateString)
+                updateExpense(expenseItem)
+                viewExpenses()
+            }
+                alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+
+            val alertDialog: AlertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
+        expenseAdapter.onDeleteClick = { expenses ->
+            val expenseItem = Expenses(expenses.id, "", 0, "", 0, "")
+            deleteExpense(expenseItem)
+            viewExpenses()
+        }
+
+        incomeAdapter.onIncomeClick = { income ->
+            val alertDialogBuilder = AlertDialog.Builder(requireContext())
+            alertDialogBuilder.setTitle("Income Item Edit")
+
+            val dialogLayout = layoutInflater.inflate(R.layout.dialog_add_entry_layout, null)
+            val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
+            alertDialogBuilder.setView(dialogLayout)
+
+            dialogBinding.tfNameDialog.editText?.setText(income.name)
+            dialogBinding.tfPriceDialog.editText?.setText(income.price.toString())
+            dialogBinding.tvDate.setText(income.dateInt.toString())
+
+            // setting radio button default
+            dialogBinding.rbExpense.isVisible = false
+            dialogBinding.rbIncome.isVisible = false
+
+            // setting dropdown menu for expense and income
+            dialogBinding.expenseAutoCompleteTextView.setText(income.category)
+
+            val incomeCategoryOptions = resources.getStringArray(R.array.income_options)
+            val incomeDropdownArrayAdapter =
+                ArrayAdapter(requireContext(), R.layout.dropdown_item, incomeCategoryOptions)
+            dialogBinding.expenseAutoCompleteTextView.setAdapter(incomeDropdownArrayAdapter)
+
+            var expenseOrIncomeCategory = ""
+            dialogBinding.expenseAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+                expenseOrIncomeCategory = parent.getItemAtPosition(position).toString()
+            }
+
+            // get current date
+            val calendar = Calendar.getInstance().time
+            val calendarDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar)
+            // setting default date
+            val defaultDate = income.dateInt.toString()
+            val defaultDay = defaultDate.substring(6, 8)
+            val defaultMonthCode = defaultDate.substring(4, 6)
+            var defaultMonth = "Jan"
+            when (defaultMonthCode) {
+                "01" -> defaultMonth = "Jan"
+                "02" -> defaultMonth = "Feb"
+                "03" -> defaultMonth = "Mar"
+                "04" -> defaultMonth = "Apr"
+                "05" -> defaultMonth = "May"
+                "06" -> defaultMonth = "Jun"
+                "07" -> defaultMonth = "Jul"
+                "08" -> defaultMonth = "Aug"
+                "09" -> defaultMonth = "Sep"
+                "10" -> defaultMonth = "Oct"
+                "11" -> defaultMonth = "Nov"
+                "12" -> defaultMonth = "Dec"
+            }
+            val defaultYear = defaultDate.substring(0, 4)
+            dialogBinding.tvDate.setText("$defaultMonth $defaultDay, $defaultYear")
+            // converting selected date format
+            var selectedDateInt = convertHeaderTextToString(calendarDateFormat)
+            var selectedDateString = calendarDateFormat
+
+            // for changing date
+            dialogBinding.btnSetDate.setOnClickListener {
+                val datePicker =
+                    MaterialDatePicker.Builder.datePicker()
+                        .setTitleText("Select date")
+                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build()
+
+                datePicker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
+                datePicker.addOnPositiveButtonClickListener {
+                    selectedDateString = datePicker.headerText
+                    dialogBinding.tvDate.setText(selectedDateString)
+                    var formattedDate = convertHeaderTextToString(selectedDateString)
+                    selectedDateInt = formattedDate
+                }
+            }
+
+            alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
+                // get data from edittexts
+                val name = dialogBinding.tfNameDialog.editText?.text.toString()
+                val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+                // get date and format
+                val dateInt = selectedDateInt
+                val dateString = selectedDateString
+                // default category
+                if (expenseOrIncomeCategory == "") {
+                    expenseOrIncomeCategory = income.category
+                }
+
+                // add new item to database table
+                val incomeItem = Income(income.id, name, price, expenseOrIncomeCategory, dateInt, dateString)
+                updateIncome(incomeItem)
+                viewIncome()
+            }
+            alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+            val alertDialog: AlertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
+        incomeAdapter.onDeleteClick = { expenses ->
+            val incomeItem = Income(expenses.id, "", 0, "", 0, "")
+            deleteIncome(incomeItem)
+            viewIncome()
         }
 
         return binding.root
@@ -393,18 +606,37 @@ class ReportFragment : Fragment() {
         }
     }
 
-    private fun updateEntry(expenses: Expenses) {
+    private fun updateExpense(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().updateExpense(expenses)
-            expenseAdapter.notifyDataSetChanged()
         }
         Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
     }
 
-    private fun deleteEntry(expenses: Expenses) {
+    private fun updateIncome(income: Income) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getIncome().updateIncome(income)
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateExpensesIncome(expensesIncome: ExpensesIncome) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getExpensesIncome().updateExpensesIncome(expensesIncome)
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun deleteExpense(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().deleteExpense(expenses)
-            expenseAdapter.notifyDataSetChanged()
+        }
+        Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun deleteIncome(income: Income) {
+        GlobalScope.launch(Dispatchers.IO) {
+            appDB.getIncome().deleteIncome(income)
         }
         Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
     }
