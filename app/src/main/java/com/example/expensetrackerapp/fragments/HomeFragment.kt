@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
         // database instantiation
         appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
-        getMonthlyExpenses()
+        getMonthExpenses()
         getTotalIncome()
 
         val dayMonthYearTriple = getDate()
@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
 
         // Pie Chart instantiation
         pieChart = binding.pieChart
-        setPieChartValues(pieChartEntry)
+        setPieChartValuesMonth(pieChartEntry)
         setUpPieChart(pieChartEntry)
 
         binding.btnThisMonth.isEnabled = false
@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
             binding.btnThisYear.isEnabled = true
 
             binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
-            getMonthlyExpenses()
+            getMonthExpenses()
         }
 
         binding.btnThisYear.setOnClickListener {
@@ -87,11 +87,8 @@ class HomeFragment : Fragment() {
             binding.tvTimespan.text = "$startOfWeek - $endOfWeek"
             val startOfWeekInt = getStartOfWeek().second.toInt()
             val endOfWeekInt = getEndOfWeek().second.toInt()
-            Log.d("WeekDates", "$startOfWeekInt and $endOfWeekInt")
             getWeekExpenses(startOfWeekInt, endOfWeekInt)
         }
-
-        setUpProgressBar()
 
         return binding.root
     }
@@ -264,7 +261,7 @@ class HomeFragment : Fragment() {
         pieChart.invalidate()
     }
 
-    private fun setPieChartValues(pieChartEntry: ArrayList<PieEntry>) {
+    private fun setPieChartValuesMonth(pieChartEntry: ArrayList<PieEntry>) {
 
         var foodTotalExpense = 0
         var utilityTotalExpense = 0
@@ -333,20 +330,33 @@ class HomeFragment : Fragment() {
     private fun getYearlyExpenses() {
         val currentDate = getDate()
 
-        var totalExpense: Int = 0
+        var yearExpense: Int = 0
+        var yearIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}____")) {
-                totalExpense += expense.price
+                yearExpense += expense.price
             }
-            withContext(Dispatchers.IO) {
-                binding.tvBalance.text = totalExpense.toString()
-                binding.tvExpensesMonth.text = totalExpense.toString()
+            for (income in appDB.getIncome().getAllIncomeSortedByMonth("${currentDate.third}____")) {
+                yearIncome += income.price
+            }
+            withContext(Dispatchers.Main) {
+                // UI setup
+                binding.tvBalance.text = yearExpense.toString()
+                binding.tvExpensesMonth.text = yearExpense.toString()
+                binding.tvIncomeMonth.text = yearIncome.toString()
+
+                // progress bar setup
+                binding.progressBar.max =  yearIncome
+                val currentProgress = yearExpense
+
+                ObjectAnimator.ofInt(binding.progressBar, "progress", currentProgress)
+                    .start()
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun getMonthlyExpenses() {
+    private fun getMonthExpenses() {
         val currentDate = getDate()
         var monthCode = "__"
         when (currentDate.second) {
@@ -364,14 +374,27 @@ class HomeFragment : Fragment() {
             "December" -> { monthCode = "12" }
         }
 
-        var totalExpense: Int = 0
+        var monthExpense: Int = 0
+        var monthIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}${monthCode}__")) {
-                totalExpense += expense.price
+                monthExpense += expense.price
             }
-            withContext(Dispatchers.IO) {
-                binding.tvBalance.text = totalExpense.toString()
-                binding.tvExpensesMonth.text = totalExpense.toString()
+            for (income in appDB.getIncome().getAllIncomeSortedByMonth("${currentDate.third}${monthCode}__")) {
+                monthIncome += income.price
+            }
+            withContext(Dispatchers.Main) {
+                // UI setup
+                binding.tvBalance.text = monthExpense.toString()
+                binding.tvExpensesMonth.text = monthExpense.toString()
+                binding.tvIncomeMonth.text = monthIncome.toString()
+
+                // progress bar setup
+                binding.progressBar.max =  monthIncome
+                val currentProgress = monthExpense
+
+                ObjectAnimator.ofInt(binding.progressBar, "progress", currentProgress)
+                    .start()
             }
         }
     }
@@ -380,13 +403,26 @@ class HomeFragment : Fragment() {
     private fun getWeekExpenses(startOfWeek: Int, endOfWeek: Int) {
 
         var weekExpense: Int = 0
+        var weekIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByWeek(startOfWeek, endOfWeek)) {
                 weekExpense += expense.price
             }
+            for (income in appDB.getIncome().getAllIncomeSortedByWeek(startOfWeek, endOfWeek)) {
+                weekIncome += income.price
+            }
             withContext(Dispatchers.Main) {
+                // UI setup
                 binding.tvBalance.text = weekExpense.toString()
                 binding.tvExpensesMonth.text = weekExpense.toString()
+                binding.tvIncomeMonth.text = weekIncome.toString()
+
+                // progress bar setup
+                binding.progressBar.max = weekIncome
+                val currentProgress = weekExpense
+
+                ObjectAnimator.ofInt(binding.progressBar, "progress", currentProgress)
+                    .start()
             }
         }
     }
@@ -399,26 +435,6 @@ class HomeFragment : Fragment() {
             }
             withContext(Dispatchers.Main) {
                 binding.tvIncomeMonth.text = totalIncome.toString()
-            }
-        }
-    }
-
-    private fun setUpProgressBar() {
-        var totalExpense: Int = 0
-        var totalIncome: Int = 0
-        GlobalScope.launch(Dispatchers.IO) {
-            for (expense in appDB.getExpenses().getAllExpenses()) {
-                totalExpense += expense.price
-            }
-            for (income in appDB.getIncome().getAllIncome()) {
-                totalIncome += income.price
-            }
-            withContext(Dispatchers.Main) {
-                binding.progressBar.max = totalExpense //+ totalIncome
-                val currentProgress = totalIncome
-
-                ObjectAnimator.ofInt(binding.progressBar, "progress", currentProgress)
-                    .start()
             }
         }
     }

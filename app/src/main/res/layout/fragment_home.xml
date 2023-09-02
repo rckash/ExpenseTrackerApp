@@ -187,29 +187,30 @@
                     android:id="@+id/tv_income_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
                     android:fontFamily="@font/dm_sans_medium"
                     android:text="Income"
                     android:textSize="20sp"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_expenses_label"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tv_expenses_label"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_expenses_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
                     android:fontFamily="@font/dm_sans_medium"
                     android:text="Expenses"
                     android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_income_label"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/tv_income_label"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -222,7 +223,7 @@
                     android:textColor="@color/blue_1"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/tv_income_label"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_income_label"
                     app:layout_constraintTop_toBottomOf="@+id/tv_income_label" />
 
                 <TextView
@@ -235,7 +236,7 @@
                     android:textColor="@color/red_1"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="@+id/tv_expenses_label"
+                    app:layout_constraintStart_toStartOf="@+id/tv_expenses_label"
                     app:layout_constraintTop_toBottomOf="@+id/tv_expenses_label" />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -246,8 +247,8 @@
                     android:layout_marginBottom="20dp"
                     app:indicatorColor="@color/blue_1"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/tv_expenses_month"
-                    app:layout_constraintStart_toStartOf="@+id/tv_income_month"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_income_month"
+                    app:layout_constraintStart_toStartOf="@+id/tv_expenses_month"
                     app:layout_constraintTop_toBottomOf="@+id/tv_income_month"
                     app:trackColor="@color/red_1"
                     app:trackCornerRadius="10dp"
