@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
         // database instantiation
         appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
-        getTotalExpenses()
+        getMonthlyExpenses()
         getTotalIncome()
 
         val dayMonthYearTriple = getDate()
@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
             binding.btnThisYear.isEnabled = true
 
             binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
-            getTotalExpenses()
+            getMonthlyExpenses()
         }
 
         binding.btnThisYear.setOnClickListener {
@@ -74,6 +74,7 @@ class HomeFragment : Fragment() {
             binding.btnThisYear.isEnabled = false
 
             binding.tvTimespan.text = dayMonthYearTriple.third
+            getYearlyExpenses()
         }
 
         binding.btnThisWeek.setOnClickListener {
@@ -329,7 +330,23 @@ class HomeFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun getTotalExpenses() {
+    private fun getYearlyExpenses() {
+        val currentDate = getDate()
+
+        var totalExpense: Int = 0
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}____")) {
+                totalExpense += expense.price
+            }
+            withContext(Dispatchers.IO) {
+                binding.tvBalance.text = totalExpense.toString()
+                binding.tvExpensesMonth.text = totalExpense.toString()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getMonthlyExpenses() {
         val currentDate = getDate()
         var monthCode = "__"
         when (currentDate.second) {
