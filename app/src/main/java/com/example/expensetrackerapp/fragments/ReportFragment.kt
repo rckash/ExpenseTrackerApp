@@ -574,14 +574,33 @@ class ReportFragment : Fragment() {
         val newExpensesIncome = mutableListOf<ExpensesIncome>()
 
         GlobalScope.launch(Dispatchers.IO) {
-//            for (expensesIncome in appDB.getExpensesIncome().getAllExpensesIncome()) {
-//                newExpensesIncome.add(expensesIncome)
-//            }
             for (expenses in appDB.getExpenses().getAllExpenses()) {
                 val name = expenses.name
                 val price = expenses.price
                 val dateInt = expenses.dateInt
-                val dateString = dateInt.toString()
+
+                // translate dateInt to dateString
+                val dateCode = dateInt.toString()
+                val dateYear = dateCode.substring(0, 4)
+                val dateMonthCode = dateCode.substring(4, 6)
+                var dateMonth = dateMonthCode
+                when (dateMonth) {
+                    "01" -> dateMonth = "Jan"
+                    "02" -> dateMonth = "Feb"
+                    "03" -> dateMonth = "Mar"
+                    "04" -> dateMonth = "Apr"
+                    "05" -> dateMonth = "May"
+                    "06" -> dateMonth = "Jun"
+                    "07" -> dateMonth = "Jul"
+                    "08" -> dateMonth = "Aug"
+                    "09" -> dateMonth = "Sep"
+                    "10" -> dateMonth = "Oct"
+                    "11" -> dateMonth = "Nov"
+                    "12" -> dateMonth = "Dec"
+                }
+                val dateDay = dateCode.substring(6, 8)
+                val dateString = "$dateMonth $dateDay, $dateYear"
+
                 val isExpense = true
                 newExpensesIncome.add(ExpensesIncome(0, name, price, dateInt, dateString, isExpense))
             }
@@ -589,11 +608,34 @@ class ReportFragment : Fragment() {
                 val name = income.name
                 val price = income.price
                 val dateInt = income.dateInt
-                val dateString = dateInt.toString()
+
+                // translate dateInt to dateString
+                val dateCode = dateInt.toString()
+                val dateYear = dateCode.substring(0, 4)
+                val dateMonthCode = dateCode.substring(4, 6)
+                var dateMonth = dateMonthCode
+                when (dateMonth) {
+                    "01" -> dateMonth = "Jan"
+                    "02" -> dateMonth = "Feb"
+                    "03" -> dateMonth = "Mar"
+                    "04" -> dateMonth = "Apr"
+                    "05" -> dateMonth = "May"
+                    "06" -> dateMonth = "Jun"
+                    "07" -> dateMonth = "Jul"
+                    "08" -> dateMonth = "Aug"
+                    "09" -> dateMonth = "Sep"
+                    "10" -> dateMonth = "Oct"
+                    "11" -> dateMonth = "Nov"
+                    "12" -> dateMonth = "Dec"
+                }
+                val dateDay = dateCode.substring(6, 8)
+                val dateString = "$dateMonth $dateDay, $dateYear"
+
                 val isExpense = false
                 newExpensesIncome.add(ExpensesIncome(0, name, price, dateInt, dateString, isExpense))
             }
             withContext(Dispatchers.Main) {
+                newExpensesIncome.sortByDescending { expensesIncome -> expensesIncome.dateInt }
                 expensesIncomeAdapter.expensesIncome = newExpensesIncome
                 expensesIncomeAdapter.notifyDataSetChanged()
             }

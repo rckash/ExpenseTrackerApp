@@ -245,12 +245,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="20dp"
-                    app:indicatorColor="@color/blue_1"
+                    app:indicatorColor="@color/red_1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/tv_income_month"
                     app:layout_constraintStart_toStartOf="@+id/tv_expenses_month"
                     app:layout_constraintTop_toBottomOf="@+id/tv_income_month"
-                    app:trackColor="@color/red_1"
+                    app:trackColor="@color/gray_1"
                     app:trackCornerRadius="10dp"
                     app:trackThickness="15dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
