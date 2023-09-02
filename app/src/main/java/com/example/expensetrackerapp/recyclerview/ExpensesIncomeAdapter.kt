@@ -11,9 +11,6 @@ import com.example.expensetrackerapp.roomdatabase.ExpensesIncome
 
 class ExpensesIncomeAdapter (var expensesIncome: List<ExpensesIncome>): RecyclerView.Adapter<ExpensesIncomeItemViewHolder>() {
 
-    var onExpensesIncomeClick: ((ExpensesIncome) -> Unit)? = null
-    var onDeleteClick: ((ExpensesIncome) -> Unit)? = null
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpensesIncomeItemViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ExpensesIncomeItemLayoutBinding.inflate(inflater, parent, false)
@@ -31,15 +28,9 @@ class ExpensesIncomeAdapter (var expensesIncome: List<ExpensesIncome>): Recycler
         if (!currentItem.isExpense) {
             val incomeCardColor = ContextCompat.getColor(holder.itemView.context, R.color.blue_1)
             holder.expensesIncomeBinding.cardView.setCardBackgroundColor(incomeCardColor)
-        }
-
-        holder.expensesIncomeBinding.apply {
-            cardView.setOnClickListener {
-                onExpensesIncomeClick?.invoke(currentItem)
-            }
-            btnDeleteGoal.setOnClickListener {
-                onDeleteClick?.invoke(currentItem)
-            }
+        } else {
+            val incomeCardColor = ContextCompat.getColor(holder.itemView.context, R.color.red_1)
+            holder.expensesIncomeBinding.cardView.setCardBackgroundColor(incomeCardColor)
         }
     }
 

@@ -574,8 +574,24 @@ class ReportFragment : Fragment() {
         val newExpensesIncome = mutableListOf<ExpensesIncome>()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for (expensesIncome in appDB.getExpensesIncome().getAllExpensesIncome()) {
-                newExpensesIncome.add(expensesIncome)
+//            for (expensesIncome in appDB.getExpensesIncome().getAllExpensesIncome()) {
+//                newExpensesIncome.add(expensesIncome)
+//            }
+            for (expenses in appDB.getExpenses().getAllExpenses()) {
+                val name = expenses.name
+                val price = expenses.price
+                val dateInt = expenses.dateInt
+                val dateString = dateInt.toString()
+                val isExpense = true
+                newExpensesIncome.add(ExpensesIncome(0, name, price, dateInt, dateString, isExpense))
+            }
+            for (income in appDB.getIncome().getAllIncome()) {
+                val name = income.name
+                val price = income.price
+                val dateInt = income.dateInt
+                val dateString = dateInt.toString()
+                val isExpense = false
+                newExpensesIncome.add(ExpensesIncome(0, name, price, dateInt, dateString, isExpense))
             }
             withContext(Dispatchers.Main) {
                 expensesIncomeAdapter.expensesIncome = newExpensesIncome
