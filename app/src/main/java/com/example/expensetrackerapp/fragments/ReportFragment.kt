@@ -490,10 +490,6 @@ class ReportFragment : Fragment() {
                 saveExpense(newItem)
                 viewExpenses()
 
-                val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = true)
-                saveExpensesIncome(newExInItem)
-                viewExpensesIncome()
-
                 // start
 
 //                val user = FirebaseAuth.getInstance().currentUser
@@ -525,10 +521,6 @@ class ReportFragment : Fragment() {
                 val newItem = Income(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
                 saveIncome(newItem)
                 viewIncome()
-
-                val newExInItem = ExpensesIncome(0, name, price, dateInt, dateString, isExpense = false)
-                saveExpensesIncome(newExInItem)
-                viewExpensesIncome()
             }
             dialog.dismiss()
         }
