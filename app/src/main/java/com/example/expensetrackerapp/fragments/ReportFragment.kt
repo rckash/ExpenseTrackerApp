@@ -650,12 +650,6 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
     }
 
-    private fun saveExpensesIncome(expensesIncome: ExpensesIncome) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getExpensesIncome().addExpensesIncome(expensesIncome)
-        }
-    }
-
     private fun updateExpense(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().updateExpense(expenses)
