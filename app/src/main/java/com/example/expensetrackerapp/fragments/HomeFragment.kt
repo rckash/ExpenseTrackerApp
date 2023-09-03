@@ -50,19 +50,44 @@ class HomeFragment : Fragment() {
 
         binding.tvUserName.text = FirebaseAuth.getInstance().currentUser?.email
 
-        var pieChartEntry: ArrayList<PieEntry> = arrayListOf()
+        var pieChartEntryWeek: ArrayList<PieEntry> = arrayListOf()
+        var pieChartEntryMonth: ArrayList<PieEntry> = arrayListOf()
+        var pieChartEntryYear: ArrayList<PieEntry> = arrayListOf()
 
         // Pie Chart instantiation
         pieChart = binding.pieChart
-        setPieChartValuesMonth(pieChartEntry)
-        setUpPieChart(pieChartEntry)
+        setPieChartValuesMonth(pieChartEntryMonth)
+        setUpPieChart(pieChartEntryMonth)
+
+        setPieChartValuesWeek(pieChartEntryWeek)
+
+        setPieChartValuesYear(pieChartEntryYear)
 
         binding.btnThisMonth.isEnabled = false
+
+        binding.btnThisWeek.setOnClickListener {
+            binding.btnThisMonth.isEnabled = true
+            binding.btnThisWeek.isEnabled = false
+            binding.btnThisYear.isEnabled = true
+
+            // Pie Chart instantiation
+            setUpPieChart(pieChartEntryWeek)
+
+            val startOfWeek = getStartOfWeek().first
+            val endOfWeek = getEndOfWeek().first
+            binding.tvTimespan.text = "$startOfWeek - $endOfWeek"
+            val startOfWeekInt = getStartOfWeek().second.toInt()
+            val endOfWeekInt = getEndOfWeek().second.toInt()
+            getWeekExpenses(startOfWeekInt, endOfWeekInt)
+        }
 
         binding.btnThisMonth.setOnClickListener {
             binding.btnThisMonth.isEnabled = false
             binding.btnThisWeek.isEnabled = true
             binding.btnThisYear.isEnabled = true
+
+            // Pie Chart instantiation
+            setUpPieChart(pieChartEntryMonth)
 
             binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
             getMonthExpenses()
@@ -73,21 +98,11 @@ class HomeFragment : Fragment() {
             binding.btnThisWeek.isEnabled = true
             binding.btnThisYear.isEnabled = false
 
+            // Pie Chart instantiation
+            setUpPieChart(pieChartEntryYear)
+
             binding.tvTimespan.text = dayMonthYearTriple.third
             getYearlyExpenses()
-        }
-
-        binding.btnThisWeek.setOnClickListener {
-            binding.btnThisMonth.isEnabled = true
-            binding.btnThisWeek.isEnabled = false
-            binding.btnThisYear.isEnabled = true
-
-            val startOfWeek = getStartOfWeek().first
-            val endOfWeek = getEndOfWeek().first
-            binding.tvTimespan.text = "$startOfWeek - $endOfWeek"
-            val startOfWeekInt = getStartOfWeek().second.toInt()
-            val endOfWeekInt = getEndOfWeek().second.toInt()
-            getWeekExpenses(startOfWeekInt, endOfWeekInt)
         }
 
         return binding.root
@@ -107,6 +122,32 @@ class HomeFragment : Fragment() {
         val formattedMonth = firstCharacter.uppercase() + restOfString.lowercase()
 
         return Triple(day, formattedMonth, year)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getDateCode(): Triple<String, String, String> {
+        // get current date
+        val now = LocalDateTime.now()
+        val day = now.dayOfMonth.toString()
+        val monthName = now.month.toString()
+        var month = "Jan"
+        when (monthName) {
+            "JANUARY" -> month = "01"
+            "FEBRUARY" -> month = "02"
+            "MARCH" -> month = "03"
+            "APRIL" -> month = "04"
+            "MAY" -> month = "05"
+            "JUNE" -> month = "06"
+            "JULY" -> month = "07"
+            "AUGUST" -> month = "08"
+            "SEPTEMBER" -> month = "09"
+            "OCTOBER" -> month = "10"
+            "NOVEMBER" -> month = "11"
+            "DECEMBER" -> month = "12"
+        }
+        val year = now.year.toString()
+
+        return Triple(day, month, year)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -261,39 +302,185 @@ class HomeFragment : Fragment() {
         pieChart.invalidate()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setPieChartValuesMonth(pieChartEntry: ArrayList<PieEntry>) {
 
-        var foodTotalExpense = 0
-        var utilityTotalExpense = 0
-        var rentTotalExpense = 0
-        var schoolWorkTotalExpense = 0
-        var leisureTotalExpense = 0
-        var travelTotalExpense = 0
-        var giftTotalExpense = 0
-        var miscTotalExpense = 0
+        val month = getDateCode().second
+        val year = getDateCode().third
+        val monthQueryCode = "$year$month" + "__"
+        Log.d("monthQuery", "$monthQueryCode")
+
+        var foodTotalExpense = 1
+        var utilityTotalExpense = 1
+        var rentTotalExpense = 1
+        var schoolWorkTotalExpense = 1
+        var leisureTotalExpense = 1
+        var travelTotalExpense = 1
+        var giftTotalExpense = 1
+        var miscTotalExpense = 1
         GlobalScope.launch(Dispatchers.IO) {
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Food")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Food", "$monthQueryCode")) {
                 foodTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Utility")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Utility", "$monthQueryCode")) {
                 utilityTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Rent")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Rent", "$monthQueryCode")) {
                 rentTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("School/Work")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("School/Work", "$monthQueryCode")) {
                 schoolWorkTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Leisure")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Leisure", "$monthQueryCode")) {
                 leisureTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Travel")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Travel", "$monthQueryCode")) {
                 travelTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Gift")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Gift", "$monthQueryCode")) {
                 giftTotalExpense += expense.price
             }
-            for (expense in appDB.getExpenses().getAllExpensesSortedByCategory("Misc")) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Misc", "$monthQueryCode")) {
+                miscTotalExpense += expense.price
+            }
+            withContext(Dispatchers.IO) {
+                if (foodTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(foodTotalExpense.toFloat(), "Food"))
+                }
+                if (utilityTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(utilityTotalExpense.toFloat(), "Utility"))
+                }
+                if (rentTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(rentTotalExpense.toFloat(), "Rent"))
+                }
+                if (schoolWorkTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(schoolWorkTotalExpense.toFloat(), "School/Work"))
+                }
+                if (leisureTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(leisureTotalExpense.toFloat(), "Leisure"))
+                }
+                if (travelTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(travelTotalExpense.toFloat(), "Travel"))
+                }
+                if (giftTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(giftTotalExpense.toFloat(), "Gift"))
+                }
+                if (miscTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(miscTotalExpense.toFloat(), "Misc"))
+                }
+            }
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun setPieChartValuesYear(pieChartEntry: ArrayList<PieEntry>) {
+
+        val year = getDateCode().third
+        val yearQueryCode = "$year" + "____"
+        Log.d("yearQuery", "$yearQueryCode")
+
+        var foodTotalExpense = 1
+        var utilityTotalExpense = 1
+        var rentTotalExpense = 1
+        var schoolWorkTotalExpense = 1
+        var leisureTotalExpense = 1
+        var travelTotalExpense = 1
+        var giftTotalExpense = 1
+        var miscTotalExpense = 1
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Food", "$yearQueryCode")) {
+                foodTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Utility", "$yearQueryCode")) {
+                utilityTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Rent", "$yearQueryCode")) {
+                rentTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("School/Work", "$yearQueryCode")) {
+                schoolWorkTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Leisure", "$yearQueryCode")) {
+                leisureTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Travel", "$yearQueryCode")) {
+                travelTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Gift", "$yearQueryCode")) {
+                giftTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Misc", "$yearQueryCode")) {
+                miscTotalExpense += expense.price
+            }
+            withContext(Dispatchers.IO) {
+                if (foodTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(foodTotalExpense.toFloat(), "Food"))
+                }
+                if (utilityTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(utilityTotalExpense.toFloat(), "Utility"))
+                }
+                if (rentTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(rentTotalExpense.toFloat(), "Rent"))
+                }
+                if (schoolWorkTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(schoolWorkTotalExpense.toFloat(), "School/Work"))
+                }
+                if (leisureTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(leisureTotalExpense.toFloat(), "Leisure"))
+                }
+                if (travelTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(travelTotalExpense.toFloat(), "Travel"))
+                }
+                if (giftTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(giftTotalExpense.toFloat(), "Gift"))
+                }
+                if (miscTotalExpense != 0) {
+                    pieChartEntry.add(PieEntry(miscTotalExpense.toFloat(), "Misc"))
+                }
+            }
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun setPieChartValuesWeek(pieChartEntry: ArrayList<PieEntry>) {
+
+        val weekStart = getStartOfWeek().second
+        val weekEnd = getEndOfWeek().second
+        Log.d("StartAndEndOfWeek", "$weekStart $weekEnd")
+
+        var foodTotalExpense = 1
+        var utilityTotalExpense = 1
+        var rentTotalExpense = 1
+        var schoolWorkTotalExpense = 1
+        var leisureTotalExpense = 1
+        var travelTotalExpense = 1
+        var giftTotalExpense = 1
+        var miscTotalExpense = 1
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Food", "$weekStart", "$weekEnd")) {
+                foodTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Utility", "$weekStart", "$weekEnd")) {
+                utilityTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Rent", "$weekStart", "$weekEnd")) {
+                rentTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("School/Work", "$weekStart", "$weekEnd")) {
+                schoolWorkTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Leisure", "$weekStart", "$weekEnd")) {
+                leisureTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Travel", "$weekStart", "$weekEnd")) {
+                travelTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Gift", "$weekStart", "$weekEnd")) {
+                giftTotalExpense += expense.price
+            }
+            for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Misc", "$weekStart", "$weekEnd")) {
                 miscTotalExpense += expense.price
             }
             withContext(Dispatchers.IO) {

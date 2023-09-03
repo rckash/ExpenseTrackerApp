@@ -678,13 +678,6 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
     }
 
-    private fun updateExpensesIncome(expensesIncome: ExpensesIncome) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getExpensesIncome().updateExpensesIncome(expensesIncome)
-        }
-        Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
-    }
-
     private fun deleteExpense(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().deleteExpense(expenses)
