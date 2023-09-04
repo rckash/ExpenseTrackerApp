@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/dm_sans_medium"
-                android:textSize="16sp"
+                android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -77,7 +77,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_amount_invested_goal"
                 app:layout_constraintVertical_bias="1.0"
-                app:trackColor="@color/red_1"
+                app:trackColor="@color/gray_1"
                 app:trackCornerRadius="10dp"
                 app:trackThickness="15dp" />
 
