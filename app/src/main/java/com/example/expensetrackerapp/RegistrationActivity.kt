@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import com.example.expensetrackerapp.databinding.ActivityRegistrationBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -37,10 +38,18 @@ class RegistrationActivity : AppCompatActivity() {
             var email = binding.tfEmailRegistration.editText?.text.toString()
             var password = binding.tfPasswordRegistration.editText?.text.toString()
 
+
+
             if (email.isNullOrEmpty()) {
                 Toast.makeText(applicationContext, "Email and/or Password is empty", Toast.LENGTH_SHORT,).show()
             } else if (password.isNullOrEmpty()) {
-                Toast.makeText(applicationContext, "Email and/or Password is empty", Toast.LENGTH_SHORT,).show()
+                Toast.makeText(
+                    applicationContext,
+                    "Email and/or Password is empty",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            } else if (password.length < 6) {
+                    Toast.makeText(applicationContext, "Password must be 6 characters or more", Toast.LENGTH_SHORT).show()
             } else {
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
