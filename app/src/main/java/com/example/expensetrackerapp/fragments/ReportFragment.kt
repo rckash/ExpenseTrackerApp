@@ -119,16 +119,26 @@ class ReportFragment : Fragment() {
                 0 -> {
                     expenseRecyclerView = binding.rvExpensesReport
                     expenseRecyclerView.adapter = expenseAdapter
+
+                    binding.yearDropdownMenu.isVisible = true
+                    binding.monthDropdownMenu.isVisible = true
                 }
                 // income item
                 1 -> {
                     incomeRecyclerView = binding.rvExpensesReport
                     incomeRecyclerView.adapter = incomeAdapter
+
+                    binding.yearDropdownMenu.isVisible = true
+                    binding.monthDropdownMenu.isVisible = true
                 }
                 // expense & income item
                 2 -> {
+                    viewExpensesIncome()
                     expensesIncomeRecyclerView = binding.rvExpensesReport
                     expensesIncomeRecyclerView.adapter = expensesIncomeAdapter
+
+                    binding.yearDropdownMenu.isVisible = false
+                    binding.monthDropdownMenu.isVisible = false
                 }
             }
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
@@ -185,7 +195,7 @@ class ReportFragment : Fragment() {
 
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
-            viewExpensesIncomeSortedByMonth(searchQuery)
+            viewExpensesIncome()
 
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
@@ -202,7 +212,7 @@ class ReportFragment : Fragment() {
 
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
-            viewExpensesIncomeSortedByMonth(searchQuery)
+            viewExpensesIncome()
 
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
@@ -489,6 +499,7 @@ class ReportFragment : Fragment() {
                 val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
                 saveExpense(newItem)
                 viewExpenses()
+                viewExpensesIncome()
 
                 // start
 
@@ -521,6 +532,7 @@ class ReportFragment : Fragment() {
                 val newItem = Income(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
                 saveIncome(newItem)
                 viewIncome()
+                viewExpensesIncome()
             }
             dialog.dismiss()
         }

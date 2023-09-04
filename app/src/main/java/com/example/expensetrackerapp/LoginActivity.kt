@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.example.expensetrackerapp.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -25,29 +26,44 @@ class LoginActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+        // Hide Progress Bar
+        binding.progressBarLogin.isVisible = false
+
         binding.btnLogin.setOnClickListener {
+            binding.btnLogin.isEnabled = false
+            binding.btnLogin.text = ""
+            binding.progressBarLogin.isVisible = true
+
             var email = binding.tfEmailLogin.editText?.text.toString()
             var password = binding.tfPasswordLogin.editText?.text.toString()
 
-            auth.signInWithEmailAndPassword(email, password)
+            if (email.isNullOrEmpty()) {
+                Toast.makeText(applicationContext, "Email and/or Password is empty", Toast.LENGTH_SHORT,).show()
+            } else if (password.isNullOrEmpty()) {
+                Toast.makeText(applicationContext, "Email and/or Password is empty", Toast.LENGTH_SHORT,).show()
+            } else {
+                auth.signInWithEmailAndPassword(email, password)
 
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("LoginActivity", "signInWithEmail:success")
-                        val user = auth.currentUser
-                        Toast.makeText(this, "Logged In Successfully", Toast.LENGTH_SHORT).show()
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("LoginActivity", "signInWithEmail:success")
+                            val user = auth.currentUser
+                            Toast.makeText(this, "Logged In Successfully", Toast.LENGTH_SHORT).show()
 
-                        val goToMainActivityIntent = Intent(this@LoginActivity, MainActivity::class.java)
-                        startActivity(goToMainActivityIntent)
-                        finish()
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("LoginActivity", "signInWithEmail:failure", task.exception)
-                        Toast.makeText(applicationContext, "Authentication failed.", Toast.LENGTH_SHORT,).show()
+                            val goToMainActivityIntent = Intent(this@LoginActivity, MainActivity::class.java)
+                            startActivity(goToMainActivityIntent)
+                            finish()
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("LoginActivity", "signInWithEmail:failure", task.exception)
+                            Toast.makeText(applicationContext, "Invalid Email and/or Password", Toast.LENGTH_SHORT,).show()
+                        }
                     }
-                }
-
+            }
+            binding.btnLogin.isEnabled = true
+            binding.btnLogin.text = "Login"
+            binding.progressBarLogin.isVisible = false
         }
 
         binding.tvRegister.setOnClickListener {
