@@ -1,6 +1,7 @@
 package com.example.expensetrackerapp.fragments
 
 import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.example.expensetrackerapp.R
@@ -21,6 +23,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.model.Values
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -67,8 +70,15 @@ class HomeFragment : Fragment() {
 
         binding.btnThisWeek.setOnClickListener {
             binding.btnThisMonth.isEnabled = true
-            binding.btnThisWeek.isEnabled = false
             binding.btnThisYear.isEnabled = true
+            binding.btnThisWeek.isEnabled = false
+
+            // change color of buttons
+            val blueColor = ContextCompat.getColor(requireActivity().applicationContext, R.color.blue_1)
+            val greenColor = ContextCompat.getColor(requireActivity().applicationContext, R.color.green_1)
+            binding.btnThisWeek.setBackgroundColor(blueColor)
+            binding.btnThisMonth.setBackgroundColor(greenColor)
+            binding.btnThisYear.setBackgroundColor(greenColor)
 
             // Pie Chart instantiation
             setUpPieChart(pieChartEntryWeek)
@@ -86,6 +96,13 @@ class HomeFragment : Fragment() {
             binding.btnThisWeek.isEnabled = true
             binding.btnThisYear.isEnabled = true
 
+            // change color of buttons
+            val blueColor = ContextCompat.getColor(requireActivity().applicationContext, R.color.blue_1)
+            val greenColor = ContextCompat.getColor(requireActivity().applicationContext, R.color.green_1)
+            binding.btnThisWeek.setBackgroundColor(greenColor)
+            binding.btnThisMonth.setBackgroundColor(blueColor)
+            binding.btnThisYear.setBackgroundColor(greenColor)
+
             // Pie Chart instantiation
             setUpPieChart(pieChartEntryMonth)
 
@@ -97,6 +114,13 @@ class HomeFragment : Fragment() {
             binding.btnThisMonth.isEnabled = true
             binding.btnThisWeek.isEnabled = true
             binding.btnThisYear.isEnabled = false
+
+            // change color of buttons
+            val blueColor = ContextCompat.getColor(requireActivity().applicationContext, R.color.blue_1)
+            val greenColor = ContextCompat.getColor(requireActivity().applicationContext, R.color.green_1)
+            binding.btnThisWeek.setBackgroundColor(greenColor)
+            binding.btnThisMonth.setBackgroundColor(greenColor)
+            binding.btnThisYear.setBackgroundColor(blueColor)
 
             // Pie Chart instantiation
             setUpPieChart(pieChartEntryYear)
@@ -310,14 +334,14 @@ class HomeFragment : Fragment() {
         val monthQueryCode = "$year$month" + "__"
         Log.d("monthQuery", "$monthQueryCode")
 
-        var foodTotalExpense = 1
-        var utilityTotalExpense = 1
-        var rentTotalExpense = 1
-        var schoolWorkTotalExpense = 1
-        var leisureTotalExpense = 1
-        var travelTotalExpense = 1
-        var giftTotalExpense = 1
-        var miscTotalExpense = 1
+        var foodTotalExpense = 0
+        var utilityTotalExpense = 0
+        var rentTotalExpense = 0
+        var schoolWorkTotalExpense = 0
+        var leisureTotalExpense = 0
+        var travelTotalExpense = 0
+        var giftTotalExpense = 0
+        var miscTotalExpense = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Food", "$monthQueryCode")) {
                 foodTotalExpense += expense.price
@@ -380,14 +404,14 @@ class HomeFragment : Fragment() {
         val yearQueryCode = "$year" + "____"
         Log.d("yearQuery", "$yearQueryCode")
 
-        var foodTotalExpense = 1
-        var utilityTotalExpense = 1
-        var rentTotalExpense = 1
-        var schoolWorkTotalExpense = 1
-        var leisureTotalExpense = 1
-        var travelTotalExpense = 1
-        var giftTotalExpense = 1
-        var miscTotalExpense = 1
+        var foodTotalExpense = 0
+        var utilityTotalExpense = 0
+        var rentTotalExpense = 0
+        var schoolWorkTotalExpense = 0
+        var leisureTotalExpense = 0
+        var travelTotalExpense = 0
+        var giftTotalExpense = 0
+        var miscTotalExpense = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Food", "$yearQueryCode")) {
                 foodTotalExpense += expense.price
@@ -450,14 +474,14 @@ class HomeFragment : Fragment() {
         val weekEnd = getEndOfWeek().second
         Log.d("StartAndEndOfWeek", "$weekStart $weekEnd")
 
-        var foodTotalExpense = 1
-        var utilityTotalExpense = 1
-        var rentTotalExpense = 1
-        var schoolWorkTotalExpense = 1
-        var leisureTotalExpense = 1
-        var travelTotalExpense = 1
-        var giftTotalExpense = 1
-        var miscTotalExpense = 1
+        var foodTotalExpense = 0
+        var utilityTotalExpense = 0
+        var rentTotalExpense = 0
+        var schoolWorkTotalExpense = 0
+        var leisureTotalExpense = 0
+        var travelTotalExpense = 0
+        var giftTotalExpense = 0
+        var miscTotalExpense = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Food", "$weekStart", "$weekEnd")) {
                 foodTotalExpense += expense.price
