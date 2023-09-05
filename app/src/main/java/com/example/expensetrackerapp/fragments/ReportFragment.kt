@@ -41,6 +41,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.exp
 
 
 class ReportFragment : Fragment() {
@@ -53,12 +54,12 @@ class ReportFragment : Fragment() {
     private lateinit var expenseList: MutableList<Expenses>
 
     private lateinit var incomeRecyclerView: RecyclerView
-    lateinit var incomeAdapter: IncomeAdapter
-    private lateinit var incomeList: MutableList<Income>
+    lateinit var incomeAdapter: ExpenseAdapter
+    private lateinit var incomeList: MutableList<Expenses>
 
     private lateinit var expensesIncomeRecyclerView: RecyclerView
-    lateinit var expensesIncomeAdapter: ExpensesIncomeAdapter
-    private lateinit var expensesIncomeList: MutableList<ExpensesIncome>
+    lateinit var expensesIncomeAdapter: ExpenseAdapter
+    private lateinit var expensesIncomeList: MutableList<Expenses>
 
     private lateinit var searchQuery: String
 
@@ -99,10 +100,10 @@ class ReportFragment : Fragment() {
 
         // adapter setup
         incomeList = viewIncome()
-        incomeAdapter = IncomeAdapter(incomeList)
+        incomeAdapter = ExpenseAdapter(incomeList)
 
-        expensesIncomeList = viewExpensesIncome()
-        expensesIncomeAdapter = ExpensesIncomeAdapter(expensesIncomeList)
+        expensesIncomeList = viewExpensesAndIncome()
+        expensesIncomeAdapter = ExpenseAdapter(expensesIncomeList)
 
         var monthQuery: String = "__"
         var yearQuery: String = "____"
@@ -117,6 +118,7 @@ class ReportFragment : Fragment() {
             when (position) {
                 // expense item
                 0 -> {
+                    viewExpenses()
                     expenseRecyclerView = binding.rvExpensesReport
                     expenseRecyclerView.adapter = expenseAdapter
 
@@ -125,6 +127,7 @@ class ReportFragment : Fragment() {
                 }
                 // income item
                 1 -> {
+                    viewIncome()
                     incomeRecyclerView = binding.rvExpensesReport
                     incomeRecyclerView.adapter = incomeAdapter
 
@@ -133,7 +136,7 @@ class ReportFragment : Fragment() {
                 }
                 // expense & income item
                 2 -> {
-                    viewExpensesIncome()
+                    viewExpensesAndIncome()
                     expensesIncomeRecyclerView = binding.rvExpensesReport
                     expensesIncomeRecyclerView.adapter = expensesIncomeAdapter
 
@@ -195,7 +198,7 @@ class ReportFragment : Fragment() {
 
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
-            viewExpensesIncome()
+            viewExpensesAndIncome()
 
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
@@ -212,7 +215,7 @@ class ReportFragment : Fragment() {
 
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
-            viewExpensesIncome()
+            viewExpensesAndIncome()
 
             Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
@@ -298,15 +301,17 @@ class ReportFragment : Fragment() {
                 // get date and format
                 val dateInt = selectedDateInt
                 val dateString = selectedDateString
+
                 // default category
                 if (expenseOrIncomeCategory == "") {
                     expenseOrIncomeCategory = expenses.category
                 }
 
                 // add new item to database table
-                val expenseItem = Expenses(expenses.id, name, price, expenseOrIncomeCategory, dateInt, dateString)
+                val expenseItem = Expenses(expenses.id, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense = true)
                 updateExpense(expenseItem)
                 viewExpenses()
+                viewExpensesAndIncome()
             }
                 alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
                     dialog.dismiss()
@@ -317,12 +322,13 @@ class ReportFragment : Fragment() {
         }
 
         expenseAdapter.onDeleteClick = { expenses ->
-            val expenseItem = Expenses(expenses.id, "", 0, "", 0, "")
+            val expenseItem = Expenses(expenses.id, "", 0, "", 0, "", true)
             deleteExpense(expenseItem)
             viewExpenses()
+            viewExpensesAndIncome()
         }
 
-        incomeAdapter.onIncomeClick = { income ->
+        incomeAdapter.onExpenseClick = { income ->
             val alertDialogBuilder = AlertDialog.Builder(requireContext())
             alertDialogBuilder.setTitle("Income Item Edit")
 
@@ -409,9 +415,10 @@ class ReportFragment : Fragment() {
                 }
 
                 // add new item to database table
-                val incomeItem = Income(income.id, name, price, expenseOrIncomeCategory, dateInt, dateString)
+                val incomeItem = Expenses(income.id, name, price, expenseOrIncomeCategory, dateInt, dateString, false)
                 updateIncome(incomeItem)
                 viewIncome()
+                viewExpensesAndIncome()
             }
             alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
@@ -422,9 +429,124 @@ class ReportFragment : Fragment() {
         }
 
         incomeAdapter.onDeleteClick = { expenses ->
-            val incomeItem = Income(expenses.id, "", 0, "", 0, "")
+            val incomeItem = Expenses(expenses.id, "", 0, "", 0, "", false)
             deleteIncome(incomeItem)
             viewIncome()
+            viewExpensesAndIncome()
+        }
+
+        expensesIncomeAdapter.onExpenseClick = { expensesAndIncome ->
+            val alertDialogBuilder = AlertDialog.Builder(requireContext())
+            alertDialogBuilder.setTitle("Income Item Edit")
+
+            val dialogLayout = layoutInflater.inflate(R.layout.dialog_add_entry_layout, null)
+            val dialogBinding = DialogAddEntryLayoutBinding.bind(dialogLayout)
+            alertDialogBuilder.setView(dialogLayout)
+
+            dialogBinding.tfNameDialog.editText?.setText(expensesAndIncome.name)
+            dialogBinding.tfPriceDialog.editText?.setText(expensesAndIncome.price.toString())
+            dialogBinding.tvDate.setText(expensesAndIncome.dateInt.toString())
+
+            // setting radio button default
+            dialogBinding.rbExpense.isVisible = false
+            dialogBinding.rbIncome.isVisible = false
+
+            // setting dropdown menu for expense and income
+            dialogBinding.expenseAutoCompleteTextView.setText(expensesAndIncome.category)
+
+            if (expensesAndIncome.isExpense) {
+                val incomeCategoryOptions = resources.getStringArray(R.array.expenses_options)
+                val incomeDropdownArrayAdapter =
+                    ArrayAdapter(requireContext(), R.layout.dropdown_item, incomeCategoryOptions)
+                dialogBinding.expenseAutoCompleteTextView.setAdapter(incomeDropdownArrayAdapter)
+            } else {
+                val incomeCategoryOptions = resources.getStringArray(R.array.income_options)
+                val incomeDropdownArrayAdapter =
+                    ArrayAdapter(requireContext(), R.layout.dropdown_item, incomeCategoryOptions)
+                dialogBinding.expenseAutoCompleteTextView.setAdapter(incomeDropdownArrayAdapter)
+            }
+
+            var expenseOrIncomeCategory = ""
+            dialogBinding.expenseAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+                expenseOrIncomeCategory = parent.getItemAtPosition(position).toString()
+            }
+
+            // get current date
+            val calendar = Calendar.getInstance().time
+            val calendarDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar)
+            // setting default date
+            val defaultDate = expensesAndIncome.dateInt.toString()
+            val defaultDay = defaultDate.substring(6, 8)
+            val defaultMonthCode = defaultDate.substring(4, 6)
+            var defaultMonth = "Jan"
+            when (defaultMonthCode) {
+                "01" -> defaultMonth = "Jan"
+                "02" -> defaultMonth = "Feb"
+                "03" -> defaultMonth = "Mar"
+                "04" -> defaultMonth = "Apr"
+                "05" -> defaultMonth = "May"
+                "06" -> defaultMonth = "Jun"
+                "07" -> defaultMonth = "Jul"
+                "08" -> defaultMonth = "Aug"
+                "09" -> defaultMonth = "Sep"
+                "10" -> defaultMonth = "Oct"
+                "11" -> defaultMonth = "Nov"
+                "12" -> defaultMonth = "Dec"
+            }
+            val defaultYear = defaultDate.substring(0, 4)
+            dialogBinding.tvDate.setText("$defaultMonth $defaultDay, $defaultYear")
+            // converting selected date format
+            var selectedDateInt = convertHeaderTextToString(calendarDateFormat)
+            var selectedDateString = calendarDateFormat
+
+            // for changing date
+            dialogBinding.btnSetDate.setOnClickListener {
+                val datePicker =
+                    MaterialDatePicker.Builder.datePicker()
+                        .setTitleText("Select date")
+                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build()
+
+                datePicker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
+                datePicker.addOnPositiveButtonClickListener {
+                    selectedDateString = datePicker.headerText
+                    dialogBinding.tvDate.setText(selectedDateString)
+                    var formattedDate = convertHeaderTextToString(selectedDateString)
+                    selectedDateInt = formattedDate
+                }
+            }
+
+            alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
+                // get data from edittexts
+                val name = dialogBinding.tfNameDialog.editText?.text.toString()
+                val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+                // get date and format
+                val dateInt = selectedDateInt
+                val dateString = selectedDateString
+                // default category
+                if (expenseOrIncomeCategory == "") {
+                    expenseOrIncomeCategory = expensesAndIncome.category
+                }
+
+                // add new item to database table
+                val incomeItem = Expenses(expensesAndIncome.id, name, price, expenseOrIncomeCategory, dateInt, dateString, expensesAndIncome.isExpense)
+                updateIncome(incomeItem)
+                viewIncome()
+                viewExpensesAndIncome()
+            }
+            alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+            val alertDialog: AlertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
+        expensesIncomeAdapter.onDeleteClick = { expensesAndIncome ->
+            val incomeItem = Expenses(expensesAndIncome.id, "", 0, "", 0, "", false)
+            deleteIncome(incomeItem)
+            viewIncome()
+            viewExpensesAndIncome()
         }
 
         return binding.root
@@ -493,13 +615,13 @@ class ReportFragment : Fragment() {
             // get date and format
             val dateInt = selectedDateInt
             val dateString = selectedDateString
+            val isExpense = true
 
             // add new item to database table
             if (dialogBinding.rbExpense.isChecked) {
-                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
+                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense)
                 saveExpense(newItem)
                 viewExpenses()
-                viewExpensesIncome()
 
                 // start
 
@@ -529,10 +651,9 @@ class ReportFragment : Fragment() {
 //                    }
 
             } else {
-                val newItem = Income(0, name, price, expenseOrIncomeCategory, dateInt, dateString)
-                saveIncome(newItem)
-                viewIncome()
-                viewExpensesIncome()
+                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, false)
+                saveExpense(newItem)
+                viewExpenses()
             }
             dialog.dismiss()
         }
@@ -559,88 +680,30 @@ class ReportFragment : Fragment() {
         return newExpenses
     }
 
-    private fun viewIncome(): MutableList<Income> {
-        val newIncome = mutableListOf<Income>()
+    private fun viewIncome(): MutableList<Expenses> {
+        val newIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for (income in appDB.getIncome().getAllIncome()) {
+            for (income in appDB.getExpenses().getAllIncome()) {
                 newIncome.add(income)
             }
             withContext(Dispatchers.Main) {
-                incomeAdapter.income = newIncome
+                incomeAdapter.expenses = newIncome
                 incomeAdapter.notifyDataSetChanged()
             }
         }
         return newIncome
     }
 
-    private fun viewExpensesIncome(): MutableList<ExpensesIncome> {
-        val newExpensesIncome = mutableListOf<ExpensesIncome>()
+    private fun viewExpensesAndIncome(): MutableList<Expenses> {
+        val newExpensesIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for (expenses in appDB.getExpenses().getAllExpenses()) {
-                val name = expenses.name
-                val price = expenses.price
-                val dateInt = expenses.dateInt
-
-                // translate dateInt to dateString
-                val dateCode = dateInt.toString()
-                val dateYear = dateCode.substring(0, 4)
-                val dateMonthCode = dateCode.substring(4, 6)
-                var dateMonth = dateMonthCode
-                when (dateMonth) {
-                    "01" -> dateMonth = "Jan"
-                    "02" -> dateMonth = "Feb"
-                    "03" -> dateMonth = "Mar"
-                    "04" -> dateMonth = "Apr"
-                    "05" -> dateMonth = "May"
-                    "06" -> dateMonth = "Jun"
-                    "07" -> dateMonth = "Jul"
-                    "08" -> dateMonth = "Aug"
-                    "09" -> dateMonth = "Sep"
-                    "10" -> dateMonth = "Oct"
-                    "11" -> dateMonth = "Nov"
-                    "12" -> dateMonth = "Dec"
-                }
-                val dateDay = dateCode.substring(6, 8)
-                val dateString = "$dateMonth $dateDay, $dateYear"
-
-                val isExpense = true
-                newExpensesIncome.add(ExpensesIncome(0, name, price, dateInt, dateString, isExpense))
-            }
-            for (income in appDB.getIncome().getAllIncome()) {
-                val name = income.name
-                val price = income.price
-                val dateInt = income.dateInt
-
-                // translate dateInt to dateString
-                val dateCode = dateInt.toString()
-                val dateYear = dateCode.substring(0, 4)
-                val dateMonthCode = dateCode.substring(4, 6)
-                var dateMonth = dateMonthCode
-                when (dateMonth) {
-                    "01" -> dateMonth = "Jan"
-                    "02" -> dateMonth = "Feb"
-                    "03" -> dateMonth = "Mar"
-                    "04" -> dateMonth = "Apr"
-                    "05" -> dateMonth = "May"
-                    "06" -> dateMonth = "Jun"
-                    "07" -> dateMonth = "Jul"
-                    "08" -> dateMonth = "Aug"
-                    "09" -> dateMonth = "Sep"
-                    "10" -> dateMonth = "Oct"
-                    "11" -> dateMonth = "Nov"
-                    "12" -> dateMonth = "Dec"
-                }
-                val dateDay = dateCode.substring(6, 8)
-                val dateString = "$dateMonth $dateDay, $dateYear"
-
-                val isExpense = false
-                newExpensesIncome.add(ExpensesIncome(0, name, price, dateInt, dateString, isExpense))
+            for (expensesAndIncome in appDB.getExpenses().getAllExpenseAndIncome()) {
+                newExpensesIncome.add(expensesAndIncome)
             }
             withContext(Dispatchers.Main) {
-                newExpensesIncome.sortByDescending { expensesIncome -> expensesIncome.dateInt }
-                expensesIncomeAdapter.expensesIncome = newExpensesIncome
+                expensesIncomeAdapter.expenses = newExpensesIncome
                 expensesIncomeAdapter.notifyDataSetChanged()
             }
         }
@@ -669,9 +732,9 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
     }
 
-    private fun updateIncome(income: Income) {
+    private fun updateIncome(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
-            appDB.getIncome().updateIncome(income)
+            appDB.getExpenses().updateExpense(expenses)
         }
         Toast.makeText(requireActivity().applicationContext, "Entry Updated", Toast.LENGTH_SHORT).show()
     }
@@ -683,9 +746,9 @@ class ReportFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
     }
 
-    private fun deleteIncome(income: Income) {
+    private fun deleteIncome(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
-            appDB.getIncome().deleteIncome(income)
+            appDB.getExpenses().deleteExpense(expenses)
         }
         Toast.makeText(requireActivity().applicationContext, "Entry Deleted", Toast.LENGTH_SHORT).show()
     }
@@ -711,30 +774,30 @@ class ReportFragment : Fragment() {
         return newExpenses
     }
 
-    private fun viewIncomeSortedByMonth(searchQuery: String): MutableList<Income> {
-        val newIncome = mutableListOf<Income>()
+    private fun viewIncomeSortedByMonth(searchQuery: String): MutableList<Expenses> {
+        val newIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for (income in appDB.getIncome().getAllIncomeSortedByMonth(searchQuery)) {
+            for (income in appDB.getExpenses().getAllIncomeSortedbyMonth(searchQuery)) {
                 newIncome.add(income)
             }
             withContext(Dispatchers.Main) {
-                incomeAdapter.income = newIncome
+                incomeAdapter.expenses = newIncome
                 incomeAdapter.notifyDataSetChanged()
             }
         }
         return newIncome
     }
 
-    private fun viewExpensesIncomeSortedByMonth(searchQuery: String): MutableList<ExpensesIncome> {
-        val newExpensesIncome = mutableListOf<ExpensesIncome>()
+    private fun viewExpensesIncomeSortedByMonth(): MutableList<Expenses> {
+        val newExpensesIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for (expensesIncome in appDB.getExpensesIncome().getAllExpensesIncomeSortedByMonth(searchQuery)) {
+            for (expensesIncome in appDB.getExpenses().getAllExpenseAndIncome()) {
                 newExpensesIncome.add(expensesIncome)
             }
             withContext(Dispatchers.Main) {
-                expensesIncomeAdapter.expensesIncome = newExpensesIncome
+                expensesIncomeAdapter.expenses = newExpensesIncome
                 expensesIncomeAdapter.notifyDataSetChanged()
             }
         }

@@ -12,9 +12,21 @@ interface ExpensesDao {
     @Insert
     fun addExpense(expenses: Expenses)
 
-    // Read
-    @Query ("SELECT * FROM expenses ORDER BY dateInt DESC")
+    // Read Expenses
+    @Query ("SELECT * FROM expenses WHERE isExpense = 1 ORDER BY dateInt DESC")
     fun getAllExpenses(): List<Expenses>
+
+    // Read Income
+    @Query ("SELECT * FROM expenses WHERE isExpense = 0 ORDER BY dateInt DESC")
+    fun getAllIncome(): List<Expenses>
+
+    // Read Expenses
+    @Query ("SELECT * FROM expenses ORDER BY dateInt DESC")
+    fun getAllExpenseAndIncome(): List<Expenses>
+
+    // Read Income
+    @Query ("SELECT * FROM expenses WHERE isExpense = 0 AND dateInt LIKE :searchQuery ORDER BY dateInt DESC")
+    fun getAllIncomeSortedbyMonth(searchQuery: String): List<Expenses>
 
     // Update
     @Update
@@ -29,7 +41,7 @@ interface ExpensesDao {
     fun getAllExpensesSortedByWeek(searchQueryfirst: Int, searchQuerySecond: Int): List<Expenses>
 
     // Sort by Date Code
-    @Query ("SELECT * FROM expenses WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
+    @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND dateInt LIKE :searchQuery ORDER BY dateInt DESC")
     fun getAllExpensesSortedByMonth(searchQuery: String): List<Expenses>
 
     // Get data by category and date

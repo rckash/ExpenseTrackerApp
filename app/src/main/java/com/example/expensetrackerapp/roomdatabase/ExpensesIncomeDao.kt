@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.google.common.net.HttpHeaders.FROM
 
 @Dao
 interface ExpensesIncomeDao {
@@ -26,4 +27,7 @@ interface ExpensesIncomeDao {
 
     @Query ("SELECT * FROM expensesIncome WHERE dateInt LIKE :searchQuery ORDER BY dateInt DESC")
     fun getAllExpensesIncomeSortedByMonth(searchQuery: String): List<ExpensesIncome>
+
+//    @Query ("SELECT * FROM expenses UNION SELECT * FROM income")
+//    fun uniteExpensesAndIncome(): List<ExpensesIncome>
 }
