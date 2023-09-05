@@ -37,7 +37,7 @@ interface ExpensesDao {
     fun deleteExpense(expenses: Expenses)
 
     // Get data for this week
-    @Query ("SELECT * FROM expenses WHERE dateInt BETWEEN :searchQueryfirst AND :searchQuerySecond")
+    @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND dateInt BETWEEN :searchQueryfirst AND :searchQuerySecond")
     fun getAllExpensesSortedByWeek(searchQueryfirst: Int, searchQuerySecond: Int): List<Expenses>
 
     // Sort by Date Code
@@ -45,11 +45,11 @@ interface ExpensesDao {
     fun getAllExpensesSortedByMonth(searchQuery: String): List<Expenses>
 
     // Get data by category and date
-    @Query ("SELECT * FROM expenses WHERE category LIKE :searchQuery AND dateInt Like :date ORDER BY dateInt DESC")
+    @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND category LIKE :searchQuery AND dateInt Like :date ORDER BY dateInt DESC")
     fun getAllExpensesSortedByCategoryDate(searchQuery: String, date: String): List<Expenses>
 
     // Get data by category and date span
-    @Query ("SELECT * FROM expenses WHERE category LIKE :searchQuery AND dateInt BETWEEN :searchQueryFirst AND :searchQuerySecond ORDER BY dateInt DESC")
+    @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND category LIKE :searchQuery AND dateInt BETWEEN :searchQueryFirst AND :searchQuerySecond ORDER BY dateInt DESC")
     fun getAllExpensesSortedByCategoryDateSpan(searchQuery: String, searchQueryFirst: String, searchQuerySecond: String): List<Expenses>
 
 }

@@ -8,7 +8,7 @@ class ExpenseItemViewHolder (val expenseBinding: ExpenseItemLayoutBinding): Recy
 
     fun bind (expense: Expenses) {
         expenseBinding.tvNameExpenses.text = expense.name
-        expenseBinding.tvPriceExpenses.text = "-₱" + expense.price.toString()
+        expenseBinding.tvPriceExpenses.text = "₱" + expense.price.toString()
         expenseBinding.tvDateExpenses.text = expense.dateString
     }
 }
