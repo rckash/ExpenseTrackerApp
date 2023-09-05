@@ -99,46 +99,50 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.sync -> {
 
-                    val user = FirebaseAuth.getInstance().currentUser
-                    val userUid = user?.uid.toString()
-                    val db = Firebase.firestore
+                    val goToLoginActivityIntent = Intent(this@MainActivity, BackupAndSyncActivity::class.java)
+                    startActivity(goToLoginActivityIntent)
+                    finish()
 
-                    GlobalScope.launch(Dispatchers.IO) {
-                        val expenses = db.collection("$userUid")
-
-                        for (expense in appDB.getExpenses().getAllExpenses()) {
-                            val city = hashMapOf(
-                                "name" to expense.name,
-                                "price" to expense.price,
-                                "category" to expense.category,
-                                "dateInt" to expense.dateInt,
-                                "dateString" to expense.dateString,
-                                "isExpense" to expense.isExpense
-                            )
-
-                            // Add a new document with a generated ID
-                            expenses.add(city)
-                                .addOnSuccessListener { documentReference ->
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Uploaded to Firebase",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
-                                }
-                                .addOnFailureListener { e ->
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Failed to upload to Online Database",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    Log.w("TAG", "Error adding document", e)
-                                }
-                        }
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(applicationContext, "Synced", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+//                    val user = FirebaseAuth.getInstance().currentUser
+//                    val userUid = user?.uid.toString()
+//                    val db = Firebase.firestore
+//
+//                    GlobalScope.launch(Dispatchers.IO) {
+//                        val expenses = db.collection("$userUid")
+//
+//                        for (expense in appDB.getExpenses().getAllExpenses()) {
+//                            val city = hashMapOf(
+//                                "name" to expense.name,
+//                                "price" to expense.price,
+//                                "category" to expense.category,
+//                                "dateInt" to expense.dateInt,
+//                                "dateString" to expense.dateString,
+//                                "isExpense" to expense.isExpense
+//                            )
+//
+//                            // Add a new document with a generated ID
+//                            expenses.add(city)
+//                                .addOnSuccessListener { documentReference ->
+//                                    Toast.makeText(
+//                                        applicationContext,
+//                                        "Uploaded to Firebase",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+//                                    Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
+//                                }
+//                                .addOnFailureListener { e ->
+//                                    Toast.makeText(
+//                                        applicationContext,
+//                                        "Failed to upload to Online Database",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+//                                    Log.w("TAG", "Error adding document", e)
+//                                }
+//                        }
+//                        withContext(Dispatchers.Main) {
+//                            Toast.makeText(applicationContext, "Synced", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
 
                 }
                 R.id.sign_out -> {
@@ -151,10 +155,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-    }
-
-    private fun uploadToFireStore() {
 
     }
 
