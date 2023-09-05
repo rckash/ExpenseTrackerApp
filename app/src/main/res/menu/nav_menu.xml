@@ -11,6 +11,10 @@
         android:id="@+id/nav_goals"
         android:title="Goals"/>
     <item
+        android:id="@+id/sync"
+        android:title="Sync"/>
+
+    <item
         android:id="@+id/sign_out"
         android:title="Sign Out"/>
 
