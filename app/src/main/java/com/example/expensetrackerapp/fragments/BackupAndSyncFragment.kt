@@ -15,6 +15,7 @@ import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +63,7 @@ class BackupAndSyncFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             val expenses = db.collection("$userUid")
 
-            for (expense in appDB.getExpenses().getAllExpenses()) {
+            for (expense in appDB.getExpenses().getAllExpenseAndIncome()) {
                 val city = hashMapOf(
                     "name" to expense.name,
                     "price" to expense.price,
@@ -110,10 +111,7 @@ class BackupAndSyncFragment : Fragment() {
                     val category =  document.data["category"].toString()
                     val dateInt = document.data["dateInt"] as Long
                     val dateString =  document.data["dateString"].toString()
-                    var isExpense = false
-                    val myExpense = document.data["category"]
-                    isExpense = myExpense == 1
-                    val user = userUid
+                    val isExpense = document.data["isExpense"] as Boolean
 
                     saveExpense(
                         Expenses(0, name, price.toInt(), category, dateInt.toInt(), dateString, isExpense, userUid)
@@ -135,6 +133,19 @@ class BackupAndSyncFragment : Fragment() {
         }
         Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
         Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
+    }
+
+    fun deleteCollection(collectionName: String) {
+        // Get the Firestore instance
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+        val db = FirebaseFirestore.getInstance()
+
+        // Get the reference to the collection
+        val collectionRef = db.collection("$userUid")
+
+        // Delete the collection
+        collectionRef
     }
 
     private fun deleteAll() {
