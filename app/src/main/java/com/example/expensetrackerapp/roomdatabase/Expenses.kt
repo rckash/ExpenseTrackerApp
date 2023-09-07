@@ -11,5 +11,6 @@ data class Expenses (
     var category: String,
     var dateInt: Int,
     var dateString: String,
-    var isExpense: Boolean
+    var isExpense: Boolean,
+    var user: String
     )

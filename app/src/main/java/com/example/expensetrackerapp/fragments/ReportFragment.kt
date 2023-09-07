@@ -91,6 +91,9 @@ class ReportFragment : Fragment() {
         // database instantiation
         appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         // default recyclerview setup
         expenseRecyclerView = binding.rvExpensesReport
         expenseList = viewExpenses()
@@ -296,8 +299,21 @@ class ReportFragment : Fragment() {
 
             alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
                 // get data from edittexts
-                val name = dialogBinding.tfNameDialog.editText?.text.toString()
-                val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+                var name = dialogBinding.tfNameDialog.editText?.text.toString()
+                var priceDialog = dialogBinding.tfPriceDialog.editText?.text.toString()
+                var price = 0
+
+                // null check
+                if (name.isNullOrEmpty()) {
+                    name = "NA"
+                }
+
+                if (priceDialog.isNullOrEmpty()) {
+                    price = 0
+                } else {
+                    price = priceDialog.toInt()
+                }
+
                 // get date and format
                 val dateInt = selectedDateInt
                 val dateString = selectedDateString
@@ -308,7 +324,7 @@ class ReportFragment : Fragment() {
                 }
 
                 // add new item to database table
-                val expenseItem = Expenses(expenses.id, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense = true)
+                val expenseItem = Expenses(expenses.id, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense = true, userUid)
                 updateExpense(expenseItem)
                 viewExpenses()
                 viewExpensesAndIncome()
@@ -322,7 +338,7 @@ class ReportFragment : Fragment() {
         }
 
         expenseAdapter.onDeleteClick = { expenses ->
-            val expenseItem = Expenses(expenses.id, "", 0, "", 0, "", true)
+            val expenseItem = Expenses(expenses.id, "", 0, "", 0, "", true, userUid)
             deleteExpense(expenseItem)
             viewExpenses()
             viewExpensesAndIncome()
@@ -404,8 +420,21 @@ class ReportFragment : Fragment() {
 
             alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
                 // get data from edittexts
-                val name = dialogBinding.tfNameDialog.editText?.text.toString()
-                val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+                var name = dialogBinding.tfNameDialog.editText?.text.toString()
+                var priceDialog = dialogBinding.tfPriceDialog.editText?.text.toString()
+                var price = 0
+
+                // null check
+                if (name.isNullOrEmpty()) {
+                    name = "NA"
+                }
+
+                if (priceDialog.isNullOrEmpty()) {
+                    price = 0
+                } else {
+                    price = priceDialog.toInt()
+                }
+
                 // get date and format
                 val dateInt = selectedDateInt
                 val dateString = selectedDateString
@@ -415,7 +444,7 @@ class ReportFragment : Fragment() {
                 }
 
                 // add new item to database table
-                val incomeItem = Expenses(income.id, name, price, expenseOrIncomeCategory, dateInt, dateString, false)
+                val incomeItem = Expenses(income.id, name, price, expenseOrIncomeCategory, dateInt, dateString, false, userUid)
                 updateIncome(incomeItem)
                 viewIncome()
                 viewExpensesAndIncome()
@@ -429,7 +458,7 @@ class ReportFragment : Fragment() {
         }
 
         incomeAdapter.onDeleteClick = { expenses ->
-            val incomeItem = Expenses(expenses.id, "", 0, "", 0, "", false)
+            val incomeItem = Expenses(expenses.id, "", 0, "", 0, "", false, userUid)
             deleteIncome(incomeItem)
             viewIncome()
             viewExpensesAndIncome()
@@ -518,8 +547,21 @@ class ReportFragment : Fragment() {
 
             alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
                 // get data from edittexts
-                val name = dialogBinding.tfNameDialog.editText?.text.toString()
-                val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+                var name = dialogBinding.tfNameDialog.editText?.text.toString()
+                var priceDialog = dialogBinding.tfPriceDialog.editText?.text.toString()
+                var price = 0
+
+                // null check
+                if (name.isNullOrEmpty()) {
+                    name = "NA"
+                }
+
+                if (priceDialog.isNullOrEmpty()) {
+                    price = 0
+                } else {
+                    price = priceDialog.toInt()
+                }
+
                 // get date and format
                 val dateInt = selectedDateInt
                 val dateString = selectedDateString
@@ -529,7 +571,7 @@ class ReportFragment : Fragment() {
                 }
 
                 // add new item to database table
-                val incomeItem = Expenses(expensesAndIncome.id, name, price, expenseOrIncomeCategory, dateInt, dateString, expensesAndIncome.isExpense)
+                val incomeItem = Expenses(expensesAndIncome.id, name, price, expenseOrIncomeCategory, dateInt, dateString, expensesAndIncome.isExpense, userUid)
                 updateIncome(incomeItem)
                 viewIncome()
                 viewExpensesAndIncome()
@@ -543,7 +585,7 @@ class ReportFragment : Fragment() {
         }
 
         expensesIncomeAdapter.onDeleteClick = { expensesAndIncome ->
-            val incomeItem = Expenses(expensesAndIncome.id, "", 0, "", 0, "", false)
+            val incomeItem = Expenses(expensesAndIncome.id, "", 0, "", 0, "", false, userUid)
             deleteIncome(incomeItem)
             viewIncome()
             viewExpensesAndIncome()
@@ -553,6 +595,9 @@ class ReportFragment : Fragment() {
     }
 
     private fun showAddDialog() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.setTitle("Add")
 
@@ -610,8 +655,21 @@ class ReportFragment : Fragment() {
 
         alertDialogBuilder.setPositiveButton("Done") { dialog, _ ->
             // get data from edittexts
-            val name = dialogBinding.tfNameDialog.editText?.text.toString()
-            val price = dialogBinding.tfPriceDialog.editText?.text.toString().toInt()
+            var name = dialogBinding.tfNameDialog.editText?.text.toString()
+            var priceDialog = dialogBinding.tfPriceDialog.editText?.text.toString()
+            var price = 0
+
+            // null check
+            if (name.isNullOrEmpty()) {
+                name = "NA"
+            }
+
+            if (priceDialog.isNullOrEmpty()) {
+                price = 0
+            } else {
+                price = priceDialog.toInt()
+            }
+
             // get date and format
             val dateInt = selectedDateInt
             val dateString = selectedDateString
@@ -619,39 +677,12 @@ class ReportFragment : Fragment() {
 
             // add new item to database table
             if (dialogBinding.rbExpense.isChecked) {
-                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense)
+                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense, userUid)
                 saveExpense(newItem)
                 viewExpenses()
 
-                // start
-
-//                val user = FirebaseAuth.getInstance().currentUser
-//                val userUid = user?.uid.toString()
-//                val db = Firebase.firestore
-//
-//                val city = hashMapOf(
-//                    "name" to name,
-//                    "price" to price,
-//                    "category" to "",
-//                    "dateInt" to dateInt,
-//                    "dateString" to dateString,
-//                    "itemType" to "expense"
-//                )
-//
-//                // Add a new document with a generated ID
-//                db.collection("$userUid")
-//                    .add(city)
-//                    .addOnSuccessListener { documentReference ->
-//                        Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
-//                        Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
-//                    }
-//                    .addOnFailureListener { e ->
-//                        Toast.makeText(requireActivity().applicationContext, "Failed to upload to Firebase", Toast.LENGTH_SHORT).show()
-//                        Log.w("TAG", "Error adding document", e)
-//                    }
-
             } else {
-                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, false)
+                val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, false, userUid)
                 saveExpense(newItem)
                 viewExpenses()
             }
@@ -666,11 +697,16 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewExpenses(): MutableList<Expenses> {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val newExpenses = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpenses()) {
-                newExpenses.add(expense)
+                if (expense.user == userUid) {
+                    newExpenses.add(expense)
+                }
             }
             withContext(Dispatchers.Main) {
                 expenseAdapter.expenses = newExpenses
@@ -681,11 +717,17 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewIncome(): MutableList<Expenses> {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val newIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
             for (income in appDB.getExpenses().getAllIncome()) {
-                newIncome.add(income)
+                if (income.user == userUid) {
+                    newIncome.add(income)
+                }
+
             }
             withContext(Dispatchers.Main) {
                 incomeAdapter.expenses = newIncome
@@ -696,11 +738,16 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewExpensesAndIncome(): MutableList<Expenses> {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val newExpensesIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
             for (expensesAndIncome in appDB.getExpenses().getAllExpenseAndIncome()) {
-                newExpensesIncome.add(expensesAndIncome)
+                if (expensesAndIncome.user == userUid) {
+                    newExpensesIncome.add(expensesAndIncome)
+                }
             }
             withContext(Dispatchers.Main) {
                 expensesIncomeAdapter.expenses = newExpensesIncome
@@ -716,13 +763,6 @@ class ReportFragment : Fragment() {
         }
         Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
         Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun saveIncome(income: Income) {
-        GlobalScope.launch(Dispatchers.IO) {
-            appDB.getIncome().addIncome(income)
-        }
-        Toast.makeText(requireActivity().applicationContext, "Income Saved", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateExpense(expenses: Expenses) {
@@ -760,11 +800,17 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewExpensesSortedByMonth(searchQuery: String): MutableList<Expenses> {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val newExpenses = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByMonth(searchQuery)) {
-                newExpenses.add(expense)
+                if (expense.user == userUid) {
+                    newExpenses.add(expense)
+                }
+
             }
             withContext(Dispatchers.Main) {
                 expenseAdapter.expenses = newExpenses
@@ -775,11 +821,16 @@ class ReportFragment : Fragment() {
     }
 
     private fun viewIncomeSortedByMonth(searchQuery: String): MutableList<Expenses> {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val newIncome = mutableListOf<Expenses>()
 
         GlobalScope.launch(Dispatchers.IO) {
             for (income in appDB.getExpenses().getAllIncomeSortedbyMonth(searchQuery)) {
-                newIncome.add(income)
+                if (income.user == userUid) {
+                    newIncome.add(income)
+                }
             }
             withContext(Dispatchers.Main) {
                 incomeAdapter.expenses = newIncome
@@ -787,21 +838,6 @@ class ReportFragment : Fragment() {
             }
         }
         return newIncome
-    }
-
-    private fun viewExpensesIncomeSortedByMonth(): MutableList<Expenses> {
-        val newExpensesIncome = mutableListOf<Expenses>()
-
-        GlobalScope.launch(Dispatchers.IO) {
-            for (expensesIncome in appDB.getExpenses().getAllExpenseAndIncome()) {
-                newExpensesIncome.add(expensesIncome)
-            }
-            withContext(Dispatchers.Main) {
-                expensesIncomeAdapter.expenses = newExpensesIncome
-                expensesIncomeAdapter.notifyDataSetChanged()
-            }
-        }
-        return newExpensesIncome
     }
 
 }

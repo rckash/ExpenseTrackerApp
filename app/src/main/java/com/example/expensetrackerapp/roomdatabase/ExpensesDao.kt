@@ -2,6 +2,7 @@ package com.example.expensetrackerapp.roomdatabase
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.DeleteTable
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -35,6 +36,9 @@ interface ExpensesDao {
     // Delete
     @Delete
     fun deleteExpense(expenses: Expenses)
+
+    @Query("DELETE FROM expenses")
+    fun deleteAll()
 
     // Get data for this week
     @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND dateInt BETWEEN :searchQueryfirst AND :searchQuerySecond")
