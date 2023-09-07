@@ -10,6 +10,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat.startActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.expensetrackerapp.databinding.ActivityMainBinding
+import com.example.expensetrackerapp.fragments.BackupAndSyncFragment
 import com.example.expensetrackerapp.fragments.GoalsFragment
 import com.example.expensetrackerapp.fragments.HomeFragment
 import com.example.expensetrackerapp.fragments.ReportFragment
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         val HomeFragment = HomeFragment()
         val ReportFragment = ReportFragment()
         val GoalsFragment = GoalsFragment()
+        val BackupAndSyncFragment = BackupAndSyncFragment()
 
         // Default Fragment Setting
         supportFragmentManager.beginTransaction().apply {
@@ -99,9 +101,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.sync -> {
 
-                    val goToLoginActivityIntent = Intent(this@MainActivity, BackupAndSyncActivity::class.java)
-                    startActivity(goToLoginActivityIntent)
-                    finish()
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.fragmentContainerView, BackupAndSyncFragment)
+                        commit()
+                    }
+                    drawerLayout.close()
 
                 }
                 R.id.sign_out -> {

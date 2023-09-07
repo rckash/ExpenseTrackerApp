@@ -1,12 +1,16 @@
-package com.example.expensetrackerapp
+package com.example.expensetrackerapp.fragments
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import com.example.expensetrackerapp.databinding.ActivityBackupAndSyncBinding
-import com.example.expensetrackerapp.databinding.ActivityMainBinding
+import com.example.expensetrackerapp.LoginActivity
+import com.example.expensetrackerapp.R
+import com.example.expensetrackerapp.databinding.FragmentBackupAndSyncBinding
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.google.firebase.auth.FirebaseAuth
@@ -18,23 +22,20 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class BackupAndSyncActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityBackupAndSyncBinding
 
-    private lateinit var auth: FirebaseAuth
+class BackupAndSyncFragment : Fragment() {
+    private lateinit var binding: FragmentBackupAndSyncBinding
 
     private lateinit var appDB: AppDatabase
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityBackupAndSyncBinding.inflate(layoutInflater)
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-
-        // Initialize Firebase Auth
-        auth = Firebase.auth
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentBackupAndSyncBinding.inflate(layoutInflater, container, false)
 
         // Initialize Database
-        appDB = AppDatabase.invoke(applicationContext)
+        appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
         binding.btnUpload.setOnClickListener {
 
@@ -49,7 +50,9 @@ class BackupAndSyncActivity : AppCompatActivity() {
 
         }
 
+        return binding.root
     }
+
 
     private fun upload() {
         val user = FirebaseAuth.getInstance().currentUser
@@ -72,16 +75,16 @@ class BackupAndSyncActivity : AppCompatActivity() {
                 // Add a new document with a generated ID
                 expenses.add(city)
                     .addOnSuccessListener { documentReference ->
-                        Toast.makeText(applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
                         Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(applicationContext, "Failed to upload to Online Database", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity().applicationContext, "Failed to upload to Online Database", Toast.LENGTH_SHORT).show()
                         Log.w("TAG", "Error adding document", e)
                     }
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(applicationContext, "Synced", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity().applicationContext, "Synced", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -130,24 +133,13 @@ class BackupAndSyncActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().addExpense(expenses)
         }
-        Toast.makeText(applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
-        Toast.makeText(applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
     }
 
     private fun deleteAll() {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().deleteAll()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            val goToMainActivityIntent = Intent(this@BackupAndSyncActivity, LoginActivity::class.java)
-            startActivity(goToMainActivityIntent)
-            finish()
         }
     }
 
