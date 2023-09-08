@@ -46,7 +46,6 @@ class HomeFragment : Fragment() {
         appDB = AppDatabase.invoke(requireActivity().applicationContext)
 
         getMonthExpenses()
-        getTotalIncome()
 
         val dayMonthYearTriple = getDate()
         binding.tvTimespan.text = "${dayMonthYearTriple.second} ${dayMonthYearTriple.third}"
@@ -539,16 +538,23 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getYearlyExpenses() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val currentDate = getDate()
 
         var yearExpense: Int = 0
         var yearIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}____")) {
-                yearExpense += expense.price
+                if (userUid == expense.user) {
+                    yearExpense += expense.price
+                }
             }
-            for (income in appDB.getIncome().getAllIncomeSortedByMonth("${currentDate.third}____")) {
-                yearIncome += income.price
+            for (income in appDB.getExpenses().getAllIncomeSortedByMonth("${currentDate.third}____")) {
+                if (userUid == income.user) {
+                    yearIncome += income.price
+                }
             }
             withContext(Dispatchers.Main) {
                 // UI setup
@@ -568,6 +574,9 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getMonthExpenses() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
         val currentDate = getDate()
         var monthCode = "__"
         when (currentDate.second) {
@@ -589,10 +598,14 @@ class HomeFragment : Fragment() {
         var monthIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}${monthCode}__")) {
-                monthExpense += expense.price
+                if (userUid == expense.user) {
+                    monthExpense += expense.price
+                }
             }
-            for (income in appDB.getIncome().getAllIncomeSortedByMonth("${currentDate.third}${monthCode}__")) {
-                monthIncome += income.price
+            for (income in appDB.getExpenses().getAllIncomeSortedByMonth("${currentDate.third}${monthCode}__")) {
+                if (userUid == income.user) {
+                    monthIncome += income.price
+                }
             }
             withContext(Dispatchers.Main) {
                 // UI setup
@@ -612,15 +625,21 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getWeekExpenses(startOfWeek: Int, endOfWeek: Int) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
 
         var weekExpense: Int = 0
         var weekIncome: Int = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByWeek(startOfWeek, endOfWeek)) {
-                weekExpense += expense.price
+                if (userUid == expense.user) {
+                    weekExpense += expense.price
+                }
             }
-            for (income in appDB.getIncome().getAllIncomeSortedByWeek(startOfWeek, endOfWeek)) {
-                weekIncome += income.price
+            for (income in appDB.getExpenses().getAllIncomeSortedByWeek(startOfWeek, endOfWeek)) {
+                if (userUid == income.user) {
+                    weekIncome += income.price
+                }
             }
             withContext(Dispatchers.Main) {
                 // UI setup
@@ -634,18 +653,6 @@ class HomeFragment : Fragment() {
 
                 ObjectAnimator.ofInt(binding.progressBar, "progress", currentProgress)
                     .start()
-            }
-        }
-    }
-
-    private fun getTotalIncome() {
-        var totalIncome: Int = 0
-        GlobalScope.launch(Dispatchers.IO) {
-            for (income in appDB.getIncome().getAllIncome()) {
-                totalIncome += income.price
-            }
-            withContext(Dispatchers.Main) {
-                binding.tvIncomeMonth.text = totalIncome.toString()
             }
         }
     }

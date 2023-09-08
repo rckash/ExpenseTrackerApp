@@ -234,6 +234,4 @@ class BackupAndSyncFragment : Fragment() {
         alertDialog.show()
     }
 
-
-
 }

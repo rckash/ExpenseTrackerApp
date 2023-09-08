@@ -44,9 +44,15 @@ interface ExpensesDao {
     @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND dateInt BETWEEN :searchQueryfirst AND :searchQuerySecond")
     fun getAllExpensesSortedByWeek(searchQueryfirst: Int, searchQuerySecond: Int): List<Expenses>
 
+    @Query ("SELECT * FROM expenses WHERE isExpense = 0 AND dateInt BETWEEN :searchQueryfirst AND :searchQuerySecond")
+    fun getAllIncomeSortedByWeek(searchQueryfirst: Int, searchQuerySecond: Int): List<Expenses>
+
     // Sort by Date Code
     @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND dateInt LIKE :searchQuery ORDER BY dateInt DESC")
     fun getAllExpensesSortedByMonth(searchQuery: String): List<Expenses>
+
+    @Query ("SELECT * FROM expenses WHERE isExpense = 0 AND dateInt LIKE :searchQuery ORDER BY dateInt DESC")
+    fun getAllIncomeSortedByMonth(searchQuery: String): List<Expenses>
 
     // Get data by category and date
     @Query ("SELECT * FROM expenses WHERE isExpense = 1 AND category LIKE :searchQuery AND dateInt Like :date ORDER BY dateInt DESC")
