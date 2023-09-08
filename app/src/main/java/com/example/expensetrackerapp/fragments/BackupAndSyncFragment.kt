@@ -67,32 +67,33 @@ class BackupAndSyncFragment : Fragment() {
             var documentNameCtr = 0
 
             for (expense in appDB.getExpenses().getAllExpenseAndIncome()) {
-                val city = hashMapOf(
-                    "name" to expense.name,
-                    "price" to expense.price,
-                    "category" to expense.category,
-                    "dateInt" to expense.dateInt,
-                    "dateString" to expense.dateString,
-                    "isExpense" to expense.isExpense
-                )
+                if (userUid == expense.user) {
+                    val city = hashMapOf(
+                        "name" to expense.name,
+                        "price" to expense.price,
+                        "category" to expense.category,
+                        "dateInt" to expense.dateInt,
+                        "dateString" to expense.dateString,
+                        "isExpense" to expense.isExpense
+                    )
 
-                val expenses = db.collection("$userUid")
-                    .document("myData")
-                    .collection("expenseAndIncomeData")
-                    .document("item$documentNameCtr")
+                    val expenses = db.collection("$userUid")
+                        .document("myData")
+                        .collection("expenseAndIncomeData")
+                        .document("item$documentNameCtr")
 
-                // Add a new document with a generated ID
-                expenses.set(city)
-                    .addOnSuccessListener { documentReference ->
-                        Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(requireActivity().applicationContext, "Failed to upload to Online Database", Toast.LENGTH_SHORT).show()
-                        Log.w("TAG", "Error adding document", e)
-                    }
+                    // Add a new document with a generated ID
+                    expenses.set(city)
+                        .addOnSuccessListener { documentReference ->
+                            Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(requireActivity().applicationContext, "Failed to upload to Online Database", Toast.LENGTH_SHORT).show()
+                            Log.w("TAG", "Error adding document", e)
+                        }
 
-                documentNameCtr++
-
+                    documentNameCtr++
+                }
             }
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireActivity().applicationContext, "Synced", Toast.LENGTH_SHORT).show()
