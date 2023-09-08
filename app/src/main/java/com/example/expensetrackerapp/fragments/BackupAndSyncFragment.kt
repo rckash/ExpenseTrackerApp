@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.exp
 
 
 class BackupAndSyncFragment : Fragment() {
@@ -40,6 +41,7 @@ class BackupAndSyncFragment : Fragment() {
 
         binding.btnUpload.setOnClickListener {
 
+            deleteCollectionDocument()
             upload()
 
         }
@@ -61,7 +63,7 @@ class BackupAndSyncFragment : Fragment() {
         val db = Firebase.firestore
 
         GlobalScope.launch(Dispatchers.IO) {
-            val expenses = db.collection("$userUid")
+            var documentNameCtr = 0
 
             for (expense in appDB.getExpenses().getAllExpenseAndIncome()) {
                 val city = hashMapOf(
@@ -73,16 +75,23 @@ class BackupAndSyncFragment : Fragment() {
                     "isExpense" to expense.isExpense
                 )
 
+                val expenses = db.collection("$userUid")
+                    .document("myData")
+                    .collection("expenseAndIncomeData")
+                    .document("item$documentNameCtr")
+
                 // Add a new document with a generated ID
-                expenses.add(city)
+                expenses.set(city)
                     .addOnSuccessListener { documentReference ->
                         Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
-                        Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
                     }
                     .addOnFailureListener { e ->
                         Toast.makeText(requireActivity().applicationContext, "Failed to upload to Online Database", Toast.LENGTH_SHORT).show()
                         Log.w("TAG", "Error adding document", e)
                     }
+
+                documentNameCtr++
+
             }
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireActivity().applicationContext, "Synced", Toast.LENGTH_SHORT).show()
@@ -97,8 +106,8 @@ class BackupAndSyncFragment : Fragment() {
 
         // Get the collection of expenses
         val expenses = db.collection("$userUid")
-
-        val newExpenses = mutableListOf<Expenses>()
+            .document("myData")
+            .collection("expenseAndIncomeData")
 
         // Get all the documents in the collection
         expenses
@@ -135,17 +144,19 @@ class BackupAndSyncFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
     }
 
-    fun deleteCollection(collectionName: String) {
-        // Get the Firestore instance
+    fun deleteCollectionDocument() {
         val user = FirebaseAuth.getInstance().currentUser
         val userUid = user?.uid.toString()
-        val db = FirebaseFirestore.getInstance()
+        val db = Firebase.firestore
 
-        // Get the reference to the collection
-        val collectionRef = db.collection("$userUid")
+        // Get the reference to the collection to delete.
+        val expenses = db.collection("$userUid")
+            .document("myData")
 
-        // Delete the collection
-        collectionRef
+        // Get a list of all the documents in the collection.
+        expenses.delete()
+
+        Toast.makeText(requireActivity().applicationContext, "document deleted", Toast.LENGTH_SHORT).show()
     }
 
     private fun deleteAll() {

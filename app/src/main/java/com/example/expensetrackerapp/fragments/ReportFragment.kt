@@ -680,11 +680,13 @@ class ReportFragment : Fragment() {
                 val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, isExpense, userUid)
                 saveExpense(newItem)
                 viewExpenses()
+                viewExpensesAndIncome()
 
             } else {
                 val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, false, userUid)
                 saveExpense(newItem)
-                viewExpenses()
+                viewIncome()
+                viewExpensesAndIncome()
             }
             dialog.dismiss()
         }
