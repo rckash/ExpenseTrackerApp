@@ -147,7 +147,6 @@ class ReportFragment : Fragment() {
                     binding.monthDropdownMenu.isVisible = false
                 }
             }
-            Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
 
         binding.monthAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
