@@ -327,6 +327,8 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setPieChartValuesMonth(pieChartEntry: ArrayList<PieEntry>) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
 
         val month = getDateCode().second
         val year = getDateCode().third
@@ -343,28 +345,44 @@ class HomeFragment : Fragment() {
         var miscTotalExpense = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Food", "$monthQueryCode")) {
-                foodTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    foodTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Utility", "$monthQueryCode")) {
-                utilityTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    utilityTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Rent", "$monthQueryCode")) {
-                rentTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    rentTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("School/Work", "$monthQueryCode")) {
-                schoolWorkTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    schoolWorkTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Leisure", "$monthQueryCode")) {
-                leisureTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    leisureTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Travel", "$monthQueryCode")) {
-                travelTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    travelTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Gift", "$monthQueryCode")) {
-                giftTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    giftTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Misc", "$monthQueryCode")) {
-                miscTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    miscTotalExpense += expense.price
+                }
             }
             withContext(Dispatchers.IO) {
                 if (foodTotalExpense != 0) {
@@ -397,6 +415,9 @@ class HomeFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    val user = FirebaseAuth.getInstance().currentUser
+    val userUid = user?.uid.toString()
+
     private fun setPieChartValuesYear(pieChartEntry: ArrayList<PieEntry>) {
 
         val year = getDateCode().third
@@ -413,28 +434,44 @@ class HomeFragment : Fragment() {
         var miscTotalExpense = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Food", "$yearQueryCode")) {
-                foodTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    foodTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Utility", "$yearQueryCode")) {
-                utilityTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    utilityTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Rent", "$yearQueryCode")) {
-                rentTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    rentTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("School/Work", "$yearQueryCode")) {
-                schoolWorkTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    schoolWorkTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Leisure", "$yearQueryCode")) {
-                leisureTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    leisureTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Travel", "$yearQueryCode")) {
-                travelTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    travelTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Gift", "$yearQueryCode")) {
-                giftTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    giftTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDate("Misc", "$yearQueryCode")) {
-                miscTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    miscTotalExpense += expense.price
+                }
             }
             withContext(Dispatchers.IO) {
                 if (foodTotalExpense != 0) {
@@ -468,6 +505,8 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setPieChartValuesWeek(pieChartEntry: ArrayList<PieEntry>) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
 
         val weekStart = getStartOfWeek().second
         val weekEnd = getEndOfWeek().second
@@ -483,28 +522,44 @@ class HomeFragment : Fragment() {
         var miscTotalExpense = 0
         GlobalScope.launch(Dispatchers.IO) {
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Food", "$weekStart", "$weekEnd")) {
-                foodTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    foodTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Utility", "$weekStart", "$weekEnd")) {
-                utilityTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    utilityTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Rent", "$weekStart", "$weekEnd")) {
-                rentTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    rentTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("School/Work", "$weekStart", "$weekEnd")) {
-                schoolWorkTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    schoolWorkTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Leisure", "$weekStart", "$weekEnd")) {
-                leisureTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    leisureTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Travel", "$weekStart", "$weekEnd")) {
-                travelTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    travelTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Gift", "$weekStart", "$weekEnd")) {
-                giftTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    giftTotalExpense += expense.price
+                }
             }
             for (expense in appDB.getExpenses().getAllExpensesSortedByCategoryDateSpan("Misc", "$weekStart", "$weekEnd")) {
-                miscTotalExpense += expense.price
+                if (userUid == expense.user) {
+                    miscTotalExpense += expense.price
+                }
             }
             withContext(Dispatchers.IO) {
                 if (foodTotalExpense != 0) {
