@@ -8,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import com.example.expensetrackerapp.LoginActivity
 import com.example.expensetrackerapp.R
+import com.example.expensetrackerapp.databinding.DialogBackupBinding
 import com.example.expensetrackerapp.databinding.FragmentBackupAndSyncBinding
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Expenses
@@ -41,15 +44,13 @@ class BackupAndSyncFragment : Fragment() {
 
         binding.btnUpload.setOnClickListener {
 
-            deleteCollectionDocument()
-            upload()
+            showBackupDialog()
 
         }
 
         binding.btnDownload.setOnClickListener {
 
-            deleteAll()
-            download()
+            showSyncDialog()
 
         }
 
@@ -144,7 +145,7 @@ class BackupAndSyncFragment : Fragment() {
         Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
     }
 
-    fun deleteCollectionDocument() {
+    private fun deleteCollectionDocument() {
         val user = FirebaseAuth.getInstance().currentUser
         val userUid = user?.uid.toString()
         val db = Firebase.firestore
@@ -164,5 +165,75 @@ class BackupAndSyncFragment : Fragment() {
             appDB.getExpenses().deleteAll()
         }
     }
+
+    private fun showBackupDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Upload to Cloud")
+
+        val dialogLayout = layoutInflater.inflate(R.layout.dialog_backup, null)
+        val dialogBinding = DialogBackupBinding.bind(dialogLayout)
+        alertDialogBuilder.setView(dialogLayout)
+
+
+
+        alertDialogBuilder.setPositiveButton("Yes") { dialog, _ ->
+
+            binding.btnDownload.isEnabled = false
+            binding.btnUpload.isEnabled = false
+            binding.progressBar2.isVisible = true
+
+            deleteCollectionDocument()
+            upload()
+            dialog.dismiss()
+
+            binding.progressBar2.isVisible = false
+            binding.btnDownload.isEnabled = true
+            binding.btnUpload.isEnabled = true
+
+        }
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+
+            dialog.dismiss()
+
+        }
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+    private fun showSyncDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Upload to Cloud")
+
+        val dialogLayout = layoutInflater.inflate(R.layout.dialog_backup, null)
+        val dialogBinding = DialogBackupBinding.bind(dialogLayout)
+        alertDialogBuilder.setView(dialogLayout)
+
+        dialogBinding.tvDescription.setText("This will overwrite your current local database. Do you wish to proceed?")
+
+        alertDialogBuilder.setPositiveButton("Yes") { dialog, _ ->
+
+            binding.btnDownload.isEnabled = false
+            binding.btnUpload.isEnabled = false
+            binding.progressBar2.isVisible = true
+
+            deleteAll()
+            download()
+            dialog.dismiss()
+
+            binding.progressBar2.isVisible = false
+            binding.btnDownload.isEnabled = true
+            binding.btnUpload.isEnabled = true
+
+        }
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+
+            dialog.dismiss()
+
+        }
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+
 
 }

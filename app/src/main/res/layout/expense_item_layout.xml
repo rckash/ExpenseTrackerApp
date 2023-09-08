@@ -78,7 +78,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="-15dp"
-        android:backgroundTint="@color/blue_1"
+        android:backgroundTint="@color/gray_1"
         app:icon="@drawable/baseline_delete_outline_24"
         app:layout_constraintEnd_toEndOf="@+id/cardView"
         app:layout_constraintStart_toEndOf="@+id/cardView"
