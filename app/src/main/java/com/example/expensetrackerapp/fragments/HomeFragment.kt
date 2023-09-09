@@ -291,7 +291,7 @@ class HomeFragment : Fragment() {
     private fun setUpPieChart(pieChartEntry: ArrayList<PieEntry>) {
         // pie chart data setup
         var pieDataSet: PieDataSet = PieDataSet(pieChartEntry, null)
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS, 100)
+        pieDataSet.setColors(ColorTemplate.JOYFUL_COLORS, 100)
         pieDataSet.valueTextSize = 20f
         pieDataSet.setDrawValues(false)
 
@@ -303,7 +303,7 @@ class HomeFragment : Fragment() {
         pieChart.setEntryLabelTextSize(0f)
         pieChart.description.isEnabled = false
         pieChart.setTouchEnabled(false)
-        pieChart.extraLeftOffset = -80f
+        pieChart.extraRightOffset = 50f
 
         // pie chart legend setup
         val plegend = pieChart.legend
@@ -319,7 +319,7 @@ class HomeFragment : Fragment() {
         plegend.xOffset = 0f
 
         // pie chart center hole setup
-        pieChart.holeRadius = 60f
+        pieChart.holeRadius = 0f
         pieChart.setTransparentCircleAlpha(0)
 
         pieChart.invalidate()

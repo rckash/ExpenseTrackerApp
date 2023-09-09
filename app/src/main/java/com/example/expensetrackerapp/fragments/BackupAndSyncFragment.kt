@@ -85,7 +85,7 @@ class BackupAndSyncFragment : Fragment() {
                     // Add a new document with a generated ID
                     expenses.set(city)
                         .addOnSuccessListener { documentReference ->
-                            Toast.makeText(requireActivity().applicationContext, "Uploaded to Firebase", Toast.LENGTH_SHORT).show()
+                            Log.d("TAG", "Successfully added document")
                         }
                         .addOnFailureListener { e ->
                             Toast.makeText(requireActivity().applicationContext, "Failed to upload to Online Database", Toast.LENGTH_SHORT).show()
@@ -95,10 +95,8 @@ class BackupAndSyncFragment : Fragment() {
                     documentNameCtr++
                 }
             }
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireActivity().applicationContext, "Synced", Toast.LENGTH_SHORT).show()
-            }
         }
+        Toast.makeText(requireActivity().applicationContext, "Backup process done", Toast.LENGTH_SHORT).show()
     }
 
     private fun download() {
@@ -135,15 +133,14 @@ class BackupAndSyncFragment : Fragment() {
                 Log.w("TAG", "Error getting documents.", exception)
             }
 
-
+        Toast.makeText(requireActivity().applicationContext, "Sync process done", Toast.LENGTH_SHORT).show()
     }
 
     private fun saveExpense(expenses: Expenses) {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().addExpense(expenses)
         }
-        Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
-        Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
+        Log.d("BASFragment", "Expense Item saved to local database")
     }
 
     private fun deleteCollectionDocument() {
@@ -158,7 +155,7 @@ class BackupAndSyncFragment : Fragment() {
         // Get a list of all the documents in the collection.
         expenses.delete()
 
-        Toast.makeText(requireActivity().applicationContext, "document deleted", Toast.LENGTH_SHORT).show()
+        Log.d("BASFragment", "Deleted Firebase Firestore Collection")
     }
 
     private fun deleteAll() {
@@ -174,8 +171,6 @@ class BackupAndSyncFragment : Fragment() {
         val dialogLayout = layoutInflater.inflate(R.layout.dialog_backup, null)
         val dialogBinding = DialogBackupBinding.bind(dialogLayout)
         alertDialogBuilder.setView(dialogLayout)
-
-
 
         alertDialogBuilder.setPositiveButton("Yes") { dialog, _ ->
 

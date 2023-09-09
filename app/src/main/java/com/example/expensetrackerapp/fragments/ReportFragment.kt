@@ -1,13 +1,11 @@
 package com.example.expensetrackerapp.fragments
 
-import android.app.ProgressDialog.show
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -16,22 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.R
 import com.example.expensetrackerapp.databinding.DialogAddEntryLayoutBinding
-import com.example.expensetrackerapp.databinding.DialogUpdateGoalLayoutBinding
 import com.example.expensetrackerapp.databinding.FragmentReportBinding
 import com.example.expensetrackerapp.recyclerview.ExpenseAdapter
-import com.example.expensetrackerapp.recyclerview.ExpensesIncomeAdapter
-import com.example.expensetrackerapp.recyclerview.IncomeAdapter
 import com.example.expensetrackerapp.roomdatabase.Expenses
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
-import com.example.expensetrackerapp.roomdatabase.ExpensesIncome
-import com.example.expensetrackerapp.roomdatabase.Goals
-import com.example.expensetrackerapp.roomdatabase.Income
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,8 +29,6 @@ import java.text.DateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Locale
-import kotlin.math.exp
 
 
 class ReportFragment : Fragment() {
@@ -201,8 +188,6 @@ class ReportFragment : Fragment() {
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
             viewExpensesAndIncome()
-
-            Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
 
         binding.yearAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
@@ -218,8 +203,6 @@ class ReportFragment : Fragment() {
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
             viewExpensesAndIncome()
-
-            Toast.makeText(requireContext(), "${parent.getItemAtPosition(position)} clicked", Toast.LENGTH_SHORT).show()
         }
         
         expenseAdapter.onExpenseClick = { expenses ->
@@ -763,7 +746,6 @@ class ReportFragment : Fragment() {
             appDB.getExpenses().addExpense(expenses)
         }
         Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
-        Toast.makeText(requireActivity().applicationContext, "${expenses.id.toString()}", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateExpense(expenses: Expenses) {
