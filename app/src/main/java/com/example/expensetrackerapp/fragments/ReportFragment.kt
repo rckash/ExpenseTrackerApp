@@ -813,7 +813,7 @@ class ReportFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             appDB.getExpenses().addExpense(expenses)
         }
-        Toast.makeText(requireActivity().applicationContext, "Expense Saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity().applicationContext, "Entry Saved", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateExpense(expenses: Expenses) {

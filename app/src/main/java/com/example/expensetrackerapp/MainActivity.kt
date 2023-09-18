@@ -14,6 +14,7 @@ import com.example.expensetrackerapp.fragments.BackupAndSyncFragment
 import com.example.expensetrackerapp.fragments.GoalsFragment
 import com.example.expensetrackerapp.fragments.HomeFragment
 import com.example.expensetrackerapp.fragments.ReportFragment
+import com.example.expensetrackerapp.fragments.TutorialFragment
 import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         val ReportFragment = ReportFragment()
         val GoalsFragment = GoalsFragment()
         val BackupAndSyncFragment = BackupAndSyncFragment()
+        val TutorialFragment = TutorialFragment()
 
         // Default Fragment Setting
         supportFragmentManager.beginTransaction().apply {
@@ -103,6 +105,15 @@ class MainActivity : AppCompatActivity() {
 
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.fragmentContainerView, BackupAndSyncFragment)
+                        commit()
+                    }
+                    drawerLayout.close()
+
+                }
+                R.id.tutorial -> {
+
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.fragmentContainerView, TutorialFragment)
                         commit()
                     }
                     drawerLayout.close()

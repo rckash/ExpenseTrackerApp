@@ -48,6 +48,7 @@
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
                 android:contentDescription="add an expense"
+                app:backgroundTint="@color/gray_1"
                 app:srcCompat="@drawable/baseline_add_24" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

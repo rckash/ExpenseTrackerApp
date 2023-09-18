@@ -15,6 +15,10 @@
         android:title="Sync"/>
 
     <item
+        android:id="@+id/tutorial"
+        android:title="Tutorial"/>
+
+    <item
         android:id="@+id/sign_out"
         android:title="Sign Out"/>
 
