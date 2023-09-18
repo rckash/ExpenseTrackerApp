@@ -111,27 +111,18 @@ class ReportFragment : Fragment() {
                     viewExpenses()
                     expenseRecyclerView = binding.rvExpensesReport
                     expenseRecyclerView.adapter = expenseAdapter
-
-                    binding.yearDropdownMenu.isVisible = true
-                    binding.monthDropdownMenu.isVisible = true
                 }
                 // income item
                 1 -> {
                     viewIncome()
                     incomeRecyclerView = binding.rvExpensesReport
                     incomeRecyclerView.adapter = incomeAdapter
-
-                    binding.yearDropdownMenu.isVisible = true
-                    binding.monthDropdownMenu.isVisible = true
                 }
                 // expense & income item
                 2 -> {
                     viewExpensesAndIncome()
                     expensesIncomeRecyclerView = binding.rvExpensesReport
                     expensesIncomeRecyclerView.adapter = expensesIncomeAdapter
-
-                    binding.yearDropdownMenu.isVisible = false
-                    binding.monthDropdownMenu.isVisible = false
                 }
             }
         }
