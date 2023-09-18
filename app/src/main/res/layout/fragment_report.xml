@@ -83,7 +83,7 @@
             android:layout_height="27dp"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/dm_sans_medium"
-            android:text="This week's free budget"
+            android:text="This month's free budget"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/dropdown_menu"

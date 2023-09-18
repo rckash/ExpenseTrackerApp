@@ -1,5 +1,7 @@
 package com.example.expensetrackerapp.fragments
 
+import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -27,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
@@ -69,6 +73,7 @@ class ReportFragment : Fragment() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -97,6 +102,8 @@ class ReportFragment : Fragment() {
 
         var monthQuery: String = "__"
         var yearQuery: String = "____"
+
+        getMonthlyFreeBudget()
 
         firestore = FirebaseFirestore.getInstance()
 
@@ -179,6 +186,7 @@ class ReportFragment : Fragment() {
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
             viewExpensesAndIncome()
+            getMonthlyFreeBudget()
         }
 
         binding.yearAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
@@ -194,6 +202,7 @@ class ReportFragment : Fragment() {
             viewExpensesSortedByMonth(searchQuery)
             viewIncomeSortedByMonth(searchQuery)
             viewExpensesAndIncome()
+            getMonthlyFreeBudget()
         }
         
         expenseAdapter.onExpenseClick = { expenses ->
@@ -301,6 +310,7 @@ class ReportFragment : Fragment() {
                 updateExpense(expenseItem)
                 viewExpenses()
                 viewExpensesAndIncome()
+                getMonthlyFreeBudget()
             }
                 alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
                     dialog.dismiss()
@@ -315,6 +325,7 @@ class ReportFragment : Fragment() {
             deleteExpense(expenseItem)
             viewExpenses()
             viewExpensesAndIncome()
+            getMonthlyFreeBudget()
         }
 
         incomeAdapter.onExpenseClick = { income ->
@@ -421,6 +432,7 @@ class ReportFragment : Fragment() {
                 updateIncome(incomeItem)
                 viewIncome()
                 viewExpensesAndIncome()
+                getMonthlyFreeBudget()
             }
             alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
@@ -435,6 +447,7 @@ class ReportFragment : Fragment() {
             deleteIncome(incomeItem)
             viewIncome()
             viewExpensesAndIncome()
+            getMonthlyFreeBudget()
         }
 
         expensesIncomeAdapter.onExpenseClick = { expensesAndIncome ->
@@ -548,6 +561,7 @@ class ReportFragment : Fragment() {
                 updateIncome(incomeItem)
                 viewIncome()
                 viewExpensesAndIncome()
+                getMonthlyFreeBudget()
             }
             alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
@@ -562,11 +576,72 @@ class ReportFragment : Fragment() {
             deleteIncome(incomeItem)
             viewIncome()
             viewExpensesAndIncome()
+            getMonthlyFreeBudget()
         }
 
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getDate(): Triple<String, String, String> {
+        // get current date
+        val now = LocalDateTime.now()
+        val day = now.dayOfMonth.toString()
+        val month = now.month.toString()
+        val year = now.year.toString()
+
+        val firstCharacter = month[0]
+        val restOfString = month.substring(1)
+
+        val formattedMonth = firstCharacter.uppercase() + restOfString.lowercase()
+
+        return Triple(day, formattedMonth, year)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getMonthlyFreeBudget() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid.toString()
+
+        val currentDate = getDate()
+        var monthCode = "__"
+        when (currentDate.second) {
+            "January" -> { monthCode = "01" }
+            "February" -> { monthCode = "02" }
+            "March" -> { monthCode = "03" }
+            "April" -> { monthCode = "04" }
+            "May" -> { monthCode = "05" }
+            "June" -> { monthCode = "06" }
+            "July" -> { monthCode = "07" }
+            "August" -> { monthCode = "08" }
+            "September" -> { monthCode = "09" }
+            "October" -> { monthCode = "10" }
+            "November" -> { monthCode = "11" }
+            "December" -> { monthCode = "12" }
+        }
+
+        var monthExpense: Int = 0
+        var monthIncome: Int = 0
+        GlobalScope.launch(Dispatchers.IO) {
+            for (expense in appDB.getExpenses().getAllExpensesSortedByMonth("${currentDate.third}${monthCode}__")) {
+                if (userUid == expense.user) {
+                    monthExpense += expense.price
+                }
+            }
+            for (income in appDB.getExpenses().getAllIncomeSortedByMonth("${currentDate.third}${monthCode}__")) {
+                if (userUid == income.user) {
+                    monthIncome += income.price
+                }
+            }
+            withContext(Dispatchers.Main) {
+                // UI setup
+                val freeBudget = monthIncome - monthExpense
+                binding.tvBudget.text = freeBudget.toString()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun showAddDialog() {
         val user = FirebaseAuth.getInstance().currentUser
         val userUid = user?.uid.toString()
@@ -654,12 +729,14 @@ class ReportFragment : Fragment() {
                 saveExpense(newItem)
                 viewExpenses()
                 viewExpensesAndIncome()
+                getMonthlyFreeBudget()
 
             } else {
                 val newItem = Expenses(0, name, price, expenseOrIncomeCategory, dateInt, dateString, false, userUid)
                 saveExpense(newItem)
                 viewIncome()
                 viewExpensesAndIncome()
+                getMonthlyFreeBudget()
             }
             dialog.dismiss()
         }
