@@ -1,8 +1,10 @@
 package com.example.expensetrackerapp
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils.replace
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
@@ -21,8 +23,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -32,12 +36,50 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appDB: AppDatabase
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     lateinit var drawerToggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        sharedPreferences = getSharedPreferences("FirstUsePreference", MODE_PRIVATE)
+
+        // Fragments Instantiation
+        val HomeFragment = HomeFragment()
+        val ReportFragment = ReportFragment()
+        val GoalsFragment = GoalsFragment()
+        val BackupAndSyncFragment = BackupAndSyncFragment()
+        val TutorialFragment = TutorialFragment()
+
+
+        //get shared pref
+        val isFirstUse = sharedPreferences.getBoolean("isFirstUse", true)
+
+        if (isFirstUse) {
+
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("isFirstUse", true)
+            editor.apply()
+            Log.d("SplashScreen", "Shared Preference Edited")
+
+            // Default Fragment Setting
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.fragmentContainerView, TutorialFragment)
+                commit()
+            }
+
+        } else {
+
+            // Default Fragment Setting
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.fragmentContainerView, HomeFragment)
+                commit()
+            }
+
+        }
 
         // Hide App Title in Action Bar
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -48,18 +90,8 @@ class MainActivity : AppCompatActivity() {
         // database instantiation
         appDB = AppDatabase.invoke(applicationContext)
 
-        // Fragments Instantiation
-        val HomeFragment = HomeFragment()
-        val ReportFragment = ReportFragment()
-        val GoalsFragment = GoalsFragment()
-        val BackupAndSyncFragment = BackupAndSyncFragment()
-        val TutorialFragment = TutorialFragment()
 
-        // Default Fragment Setting
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.fragmentContainerView, HomeFragment)
-            commit()
-        }
+
 
         // nav drawer setup
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
@@ -84,6 +116,11 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 R.id.nav_report -> {
+
+                    val editor = sharedPreferences.edit()
+                    editor.putBoolean("isFirstUse", false)
+                    editor.apply()
+                    Log.d("SplashScreen", "Shared Preference Edited")
 
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.fragmentContainerView, ReportFragment)
