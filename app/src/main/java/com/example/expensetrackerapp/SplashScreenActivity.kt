@@ -21,6 +21,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         // Hide App Title in Action Bar
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.hide()
 
         CoroutineScope(Dispatchers.Main).launch {
             delay(SPLASH_DELAY)
