@@ -3,13 +3,7 @@ package com.example.expensetrackerapp.recyclerview
 import android.animation.ObjectAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetrackerapp.databinding.GoalItemLayoutBinding
-import com.example.expensetrackerapp.roomdatabase.AppDatabase
 import com.example.expensetrackerapp.roomdatabase.Goals
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.checkerframework.checker.units.qual.g
 
 class GoalsItemViewHolder (val goalsBinding: GoalItemLayoutBinding): RecyclerView.ViewHolder(goalsBinding.root) {
 
