@@ -33,7 +33,7 @@ class TutorialFragment : Fragment() {
         imageList.add(SlideModel(R.drawable.editingitemtutorial, "Tap on an expense or income item to edit its details."))
         imageList.add(SlideModel(R.drawable.viewdropdowntutorial, "You can change the items you wish to view from the View Dropdown Menu..."))
         imageList.add(SlideModel(R.drawable.viewstutorial, "You can view expense or income items uniquely..."))
-        imageList.add(SlideModel(R.drawable.expensesincometab, "Or together."))
+        imageList.add(SlideModel(R.drawable.expensesincometab, "...Or together."))
         imageList.add(SlideModel(R.drawable.querytutorial, "You can view items by month or year using the Month and Year Dropdown Menu"))
         imageList.add(SlideModel(R.drawable.goalsfragment, "The Goals Tab items work similar to items on the Report Tab."))
         imageList.add(SlideModel(R.drawable.progressbartutorial, "On Goals Tab, you can track your goals as you allocate a budget for each with a Progress Bar."))
