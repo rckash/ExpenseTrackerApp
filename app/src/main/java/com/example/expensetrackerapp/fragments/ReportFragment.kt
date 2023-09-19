@@ -136,7 +136,6 @@ class ReportFragment : Fragment() {
 
         binding.monthAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
             val month = parent.getItemAtPosition(position).toString()
-            var monthQuery = "__"
             when (month) {
                 "January" -> {
                     monthQuery = "01"
