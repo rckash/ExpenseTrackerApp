@@ -131,10 +131,6 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getDate(): Triple<String, String, String> {
         // get current date
