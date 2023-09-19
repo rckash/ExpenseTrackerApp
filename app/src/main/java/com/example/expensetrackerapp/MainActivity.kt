@@ -2,6 +2,7 @@ package com.example.expensetrackerapp
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils.replace
@@ -44,6 +45,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // lock screen orientation to portrait
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         sharedPreferences = getSharedPreferences("FirstUsePreference", MODE_PRIVATE)
 
